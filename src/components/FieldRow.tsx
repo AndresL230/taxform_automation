@@ -30,6 +30,7 @@ export default function FieldRow({ field, selected, onSelect, onChange }: Props)
       <input
         className={`flex-1 rounded-[3px] border bg-white px-2.5 py-1.5 text-xs tabular-nums text-ink outline-none focus:border-accent ${low ? 'border-review-line' : 'border-border'}`}
         value={field.value}
+        aria-label={field.label}
         onClick={(e) => e.stopPropagation()}
         onChange={(e) => onChange(e.target.value)}
       />

@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-paper">
       <header className="flex items-center gap-2.5 border-b border-border bg-white px-4 py-3 text-sm font-semibold">
-        <span className="h-2.5 w-2.5 rounded-[2px] bg-accent" />
+        <span className="h-2.5 w-2.5 rounded-[2px] bg-ink" />
         TaxExtract
         <span className="ml-auto text-xs font-medium text-muted">Tax preparer</span>
       </header>

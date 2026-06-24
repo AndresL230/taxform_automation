@@ -33,3 +33,9 @@ test('mark as reviewed flips the status pill to Ready', async () => {
   await userEvent.click(screen.getByRole('button', { name: /mark as reviewed/i }))
   expect(screen.getByText('Ready')).toBeInTheDocument()
 })
+
+test('failed doc shows failed callout and no Mark as reviewed button', () => {
+  renderAt('/review/doc-scan')
+  expect(screen.getByText(/extraction failed for this document/i)).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /mark as reviewed/i })).toBeNull()
+})

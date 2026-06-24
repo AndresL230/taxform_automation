@@ -49,13 +49,15 @@ export default function Review() {
         <FormTypeBadge formType={doc.formType} />
         <StatusPill status={doc.status} />
         <div className="ml-auto flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => markReviewed(doc.id)}
-            className="rounded-[3px] border border-border bg-white px-3.5 py-2 text-sm font-semibold text-ink"
-          >
-            Mark as reviewed
-          </button>
+          {(doc.status === 'ready' || doc.status === 'needs_review') && (
+            <button
+              type="button"
+              onClick={() => markReviewed(doc.id)}
+              className="rounded-[3px] border border-border bg-white px-3.5 py-2 text-sm font-semibold text-ink"
+            >
+              Mark as reviewed
+            </button>
+          )}
           <div className="relative" ref={exportRef}>
             <button
               type="button"
@@ -91,6 +93,10 @@ export default function Review() {
       <main className="mx-auto max-w-6xl px-6 py-6">
         {doc.status === 'processing' ? (
           <p className="text-muted">This document is still processing…</p>
+        ) : doc.status === 'failed' ? (
+          <div className="rounded-[3px] border border-failed/40 bg-failed-bg px-4 py-3 text-sm text-failed">
+            Extraction failed for this document. It can't be reviewed — re-upload the file to try again.
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
