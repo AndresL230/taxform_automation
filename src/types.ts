@@ -22,4 +22,5 @@ export type Document = {
   status: DocStatus
   fields: Field[]
   reviewedAt: string | null
+  error?: string
 }
