@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useDocuments } from '../state/DocumentsContext'
 import DocumentViewer from '../components/DocumentViewer'
@@ -13,6 +13,18 @@ export default function Review() {
   const { getDocument, updateField, markReviewed } = useDocuments()
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const exportRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const handleMouseDown = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [menuOpen])
 
   const doc = id ? getDocument(id) : undefined
 
@@ -26,13 +38,13 @@ export default function Review() {
   }
 
   const selectedField = doc.fields.find((f) => f.key === selectedKey) ?? null
-  const highlight: BBox | null = selectedField ? selectedField.bbox : null
+  const highlight: BBox | null = selectedField?.bbox ?? null
   const baseName = doc.filename.replace(/\.[^.]+$/, '')
 
   return (
     <div className="min-h-screen bg-paper">
       <header className="flex flex-wrap items-center gap-2.5 border-b border-border bg-white px-4 py-3">
-        <Link to="/" className="rounded-[3px] border border-border bg-white px-2.5 py-1.5 text-sm">←</Link>
+        <Link to="/" aria-label="Back to document list" className="rounded-[3px] border border-border bg-white px-2.5 py-1.5 text-sm">←</Link>
         <span className="text-sm font-semibold">{doc.filename}</span>
         <FormTypeBadge formType={doc.formType} />
         <StatusPill status={doc.status} />
@@ -44,10 +56,12 @@ export default function Review() {
           >
             Mark as reviewed
           </button>
-          <div className="relative">
+          <div className="relative" ref={exportRef}>
             <button
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
               className="rounded-[3px] bg-accent px-3.5 py-2 text-sm font-semibold text-white"
             >
               Export ▾
