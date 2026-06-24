@@ -616,9 +616,10 @@ vi.mock('@google/genai', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@google/genai')>()
   return {
     ...actual,
-    GoogleGenAI: vi.fn(() => ({
-      models: { generateContent: vi.fn(async () => ({ text: JSON.stringify(FAKE) })) },
-    })),
+    // Regular function expression (not an arrow) so `new GoogleGenAI(...)` is constructable under vitest.
+    GoogleGenAI: vi.fn(function () {
+      return { models: { generateContent: vi.fn(async () => ({ text: JSON.stringify(FAKE) })) } }
+    }),
   }
 })
 
