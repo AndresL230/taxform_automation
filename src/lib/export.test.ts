@@ -1,0 +1,26 @@
+import { toJSON, toCSV } from './export'
+import type { Document } from '../types'
+
+const doc: Document = {
+  id: 'd1', filename: 'a.pdf', fileUrl: '/x.png', formType: 'W-2',
+  status: 'ready', reviewedAt: null,
+  fields: [
+    { key: 'wages', label: 'Wages, tips, other comp.', box: '1', value: '60,000.00',
+      originalValue: '60,000.00', confidence: 0.98, type: 'currency',
+      bbox: { page: 1, x: 0, y: 0, w: 10, h: 5 } },
+    { key: 'employer', label: 'Employer, Inc.', box: 'c', value: 'A, B Co',
+      originalValue: 'A, B Co', confidence: 0.9, type: 'text',
+      bbox: { page: 1, x: 0, y: 0, w: 10, h: 5 } },
+  ],
+}
+
+test('toJSON round-trips the document', () => {
+  expect(JSON.parse(toJSON(doc))).toEqual(doc)
+})
+
+test('toCSV emits header + a row per field and quotes commas', () => {
+  const lines = toCSV(doc).split('\n')
+  expect(lines[0]).toBe('key,label,box,value,originalValue,confidence,type')
+  expect(lines[1]).toBe('wages,"Wages, tips, other comp.",1,"60,000.00","60,000.00",0.98,currency')
+  expect(lines[2]).toBe('employer,"Employer, Inc.",c,"A, B Co","A, B Co",0.9,text')
+})
