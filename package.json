@@ -1,11 +1,8 @@
 {
   "name": "taxform_automation",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -15,18 +12,6 @@
     "cf-dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AndresL230/taxform_automation.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "bugs": {
-    "url": "https://github.com/AndresL230/taxform_automation/issues"
-  },
-  "homepage": "https://github.com/AndresL230/taxform_automation#readme",
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

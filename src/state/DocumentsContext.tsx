@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { Document } from '../types'
 import { fixtures, W2_FIELD_TEMPLATE } from '../fixtures'
 import w2Image from '../assets/w2-sample.png' // match fixtures' asset
@@ -13,20 +13,25 @@ type DocumentsContextValue = {
 
 const DocumentsContext = createContext<DocumentsContextValue | null>(null)
 
-let seq = 0
-const nextId = () => `doc-upload-${++seq}`
-
 export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const [documents, setDocuments] = useState<Document[]>(fixtures)
+  const seqRef = useRef(0)
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  // Cancel any pending simulated-extraction timers when the provider unmounts.
+  useEffect(() => {
+    const timers = timersRef.current
+    return () => timers.forEach(clearTimeout)
+  }, [])
 
   const addDocuments = useCallback((files: File[]) => {
     const created = files.map<Document>((file) => ({
-      id: nextId(), filename: file.name, fileUrl: w2Image, formType: 'W-2',
+      id: `doc-upload-${++seqRef.current}`, filename: file.name, fileUrl: w2Image, formType: 'W-2',
       status: 'processing', reviewedAt: null, fields: [],
     }))
     setDocuments((prev) => [...created, ...prev])
     created.forEach((doc) => {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setDocuments((prev) =>
           prev.map((d) =>
             d.id === doc.id
@@ -35,6 +40,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
           ),
         )
       }, 1500)
+      timersRef.current.push(timer)
     })
   }, [])
 

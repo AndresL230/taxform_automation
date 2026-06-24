@@ -27,7 +27,7 @@ test('seeds from fixtures', () => {
   expect(screen.getByTestId('count').textContent).toBe('5')
 })
 
-test('addDocuments appends processing then flips after timeout', () => {
+test('addDocuments prepends processing then flips after timeout', () => {
   vi.useFakeTimers()
   setup()
   act(() => { screen.getByText('add').click() })
