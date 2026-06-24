@@ -3,6 +3,8 @@
   "name": "taxform-automation",
   "main": "src/worker.ts",
   "compatibility_date": "2026-06-01",
+  // GEMINI_API_KEY is a secret, not a var. Production: `wrangler secret put GEMINI_API_KEY`.
+  // Local dev: put `GEMINI_API_KEY=...` in .dev.vars (gitignored; see .dev.vars.example).
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
