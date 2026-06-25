@@ -16,8 +16,8 @@ export default function UploadZone({ onFiles }: { onFiles: (files: File[]) => vo
       className={`rounded-[3px] border-2 border-dashed bg-paper-2 p-10 text-center ${dragOver ? 'border-accent' : 'border-[#d7d4cc]'}`}
     >
       <div className="text-2xl">⬆</div>
-      <div className="mt-2 text-base font-semibold text-ink">Drag &amp; drop your W-2 forms</div>
-      <div className="text-sm text-muted">W-2 forms only for now · PDF, PNG or JPG · or click to browse</div>
+      <div className="mt-2 text-base font-semibold text-ink">Drag &amp; drop your tax forms</div>
+      <div className="text-sm text-muted">W-2 and 1099-NEC · PDF, PNG or JPG · or click to browse</div>
       <button
         type="button"
         onClick={() => inputRef.current?.click()}

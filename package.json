@@ -12,7 +12,7 @@
     "cf-dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "capture-fixtures": "vite-node scripts/capture-fixtures.ts",
-    "eval:make": "vite-node scripts/eval/make-w2.ts",
+    "eval:make": "vite-node scripts/eval/make-form.ts",
     "eval:degrade": "vite-node scripts/eval/degrade.ts",
     "eval:run": "vite-node scripts/eval/run.ts"
   },

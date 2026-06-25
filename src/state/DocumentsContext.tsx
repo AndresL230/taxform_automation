@@ -45,7 +45,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       objectUrlsRef.current.push(fileUrl)
 
       const provisional: Document = {
-        id, filename: file.name, fileUrl, formType: 'W-2',
+        id, filename: file.name, fileUrl, formType: '',
         status: 'processing', reviewedAt: null, fields: [],
       }
       setDocuments((prev) => [provisional, ...prev])

@@ -1,0 +1,35 @@
+import type { Schema } from '@google/genai'
+import type { FieldDef } from '../types'
+import type { ParsedExtraction } from './build'
+import { W2_FORM } from './w2'
+import { NEC_FORM } from './nec'
+
+export type FormDefinition = {
+  formType: string
+  fieldDefs: readonly FieldDef[]
+  responseSchema: Schema
+  validate: (raw: unknown) => ParsedExtraction
+  promptFragment: string
+}
+
+// Registry keyed by canonical form type. Adding a form is a new entry here plus its
+// src/extract/<form>.ts definition, no changes to build/prompt/extract.
+export const FORM_REGISTRY: Record<string, FormDefinition> = {
+  [W2_FORM.formType]: W2_FORM,
+  [NEC_FORM.formType]: NEC_FORM,
+}
+
+export const supportedFormTypes = Object.keys(FORM_REGISTRY)
+
+// Map common model spellings to a canonical registry key. Unknown input returns
+// trimmed as-is, so the caller can report "Detected {type}, not a supported form.".
+export function normalizeFormType(raw: string): string {
+  const compact = raw.trim().toUpperCase().replace(/[\s_]+/g, '-')
+  if (compact === 'W-2' || compact === 'W2') return 'W-2'
+  if (compact === '1099-NEC' || compact === '1099NEC') return '1099-NEC'
+  return raw.trim()
+}
+
+export function getFormDefinition(rawType: string): FormDefinition | undefined {
+  return FORM_REGISTRY[normalizeFormType(rawType)]
+}

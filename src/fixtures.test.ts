@@ -1,7 +1,7 @@
 import { fixtures } from './fixtures'
 
-test('there are 5 documents covering ready, needs_review, and failed', () => {
-  expect(fixtures).toHaveLength(5)
+test('there are 6 documents covering ready, needs_review, and failed', () => {
+  expect(fixtures).toHaveLength(6)
   const statuses = fixtures.map((d) => d.status)
   expect(statuses).toContain('ready')
   expect(statuses).toContain('needs_review')
@@ -9,9 +9,10 @@ test('there are 5 documents covering ready, needs_review, and failed', () => {
   expect(statuses).not.toContain('processing')
 })
 
-test('ready docs have all 7 fields, confident and non-empty, unedited', () => {
+test('ready docs have their form field count, confident and non-empty, unedited', () => {
+  const counts: Record<string, number> = { 'W-2': 7, '1099-NEC': 6 }
   for (const d of fixtures.filter((d) => d.status === 'ready')) {
-    expect(d.fields).toHaveLength(7)
+    expect(d.fields).toHaveLength(counts[d.formType])
     expect(d.fields.every((f) => f.value !== '' && f.confidence >= 0.7)).toBe(true)
     expect(d.fields.every((f) => f.value === f.originalValue)).toBe(true)
   }
@@ -23,10 +24,10 @@ test('a needs_review doc has 7 fields with at least one below 0.7 confidence', (
   expect(nr.fields.some((f) => f.confidence < 0.7)).toBe(true)
 })
 
-test('the failed doc has no fields and the derived detectedFormType message', () => {
+test('the failed doc has no fields and the server unsupported-form message', () => {
   const failed = fixtures.find((d) => d.status === 'failed')!
   expect(failed.fields).toHaveLength(0)
-  expect(failed.error).toBe('Detected 1099-NEC, not a legible W-2.')
+  expect(failed.error).toBe('Detected 1098, not a supported form.')
 })
 
 test('fields use the production W2_FIELDS keys in order', () => {

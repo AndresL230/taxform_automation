@@ -1,0 +1,12 @@
+{
+  "status": "ready",
+  "detectedFormType": "1099-NEC",
+  "fields": [
+    { "key": "nonemployeeCompensation", "label": "Nonemployee compensation", "box": "1", "value": "24500.00", "originalValue": "24500.00", "confidence": 0.98, "type": "currency", "bbox": { "page": 1, "x": 55.0, "y": 30.0, "w": 20.0, "h": 4.0 } },
+    { "key": "federalWithholding", "label": "Federal income tax withheld", "box": "4", "value": "0.00", "originalValue": "0.00", "confidence": 0.97, "type": "currency", "bbox": { "page": 1, "x": 55.0, "y": 42.0, "w": 20.0, "h": 4.0 } },
+    { "key": "payerTIN", "label": "Payer's TIN", "box": "", "value": "12-3456789", "originalValue": "12-3456789", "confidence": 0.96, "type": "ein", "bbox": { "page": 1, "x": 5.0, "y": 20.0, "w": 25.0, "h": 4.0 } },
+    { "key": "recipientTIN", "label": "Recipient's TIN", "box": "", "value": "123-45-6789", "originalValue": "123-45-6789", "confidence": 0.95, "type": "ssn", "bbox": { "page": 1, "x": 35.0, "y": 20.0, "w": 22.0, "h": 4.0 } },
+    { "key": "payerName", "label": "Payer's name", "box": "", "value": "Globex Corporation", "originalValue": "Globex Corporation", "confidence": 0.94, "type": "text", "bbox": { "page": 1, "x": 5.0, "y": 8.0, "w": 40.0, "h": 4.0 } },
+    { "key": "recipientName", "label": "Recipient's name", "box": "", "value": "Dana Lee", "originalValue": "Dana Lee", "confidence": 0.93, "type": "text", "bbox": { "page": 1, "x": 5.0, "y": 28.0, "w": 30.0, "h": 4.0 } }
+  ]
+}

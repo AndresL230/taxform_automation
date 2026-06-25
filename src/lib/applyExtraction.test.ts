@@ -27,7 +27,12 @@ test('failed with a server error keeps that error', () => {
   expect(applyExtraction(base, result).error).toBe('Empty response from model')
 })
 
-test('failed without a server error derives the detectedFormType message', () => {
-  const result: ExtractionResult = { fields: [], status: 'failed', detectedFormType: '1099-NEC' }
-  expect(applyExtraction(base, result).error).toBe('Detected 1099-NEC, not a legible W-2.')
+test('failed result carries the server error through and formType reflects detectedFormType', () => {
+  const result: ExtractionResult = {
+    fields: [], status: 'failed', detectedFormType: '1098',
+    error: 'Detected 1098, not a supported form.',
+  }
+  const doc = applyExtraction(base, result)
+  expect(doc.formType).toBe('1098')
+  expect(doc.error).toBe('Detected 1098, not a supported form.')
 })

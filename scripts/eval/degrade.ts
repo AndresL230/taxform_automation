@@ -1,16 +1,13 @@
 // Derives image, layout, and content-image variants from the clean render.
-// Run standalone (after make-w2.ts) with: npx vite-node scripts/eval/degrade.ts
+// Run standalone (after make-form.ts) with:
+//   npx vite-node scripts/eval/degrade.ts                 (W-2, the default)
+//   FORM=1099-NEC npx vite-node scripts/eval/degrade.ts   (1099-NEC)
 // This script does NOT call the model.
 import { readFile, writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 import { createCanvas, loadImage } from '@napi-rs/canvas'
-import type {
-  FormData,
-  GroundTruth,
-  Layout,
-  LayoutRect,
-  VariantManifestEntry,
-} from './types'
+import { getEvalForm, type EvalForm } from './forms'
+import type { GroundTruth, Layout, LayoutRect, VariantManifestEntry } from './types'
 
 const OUT = new URL('./out/', import.meta.url)
 
@@ -121,9 +118,9 @@ async function redact(base: Buffer, rect: LayoutRect): Promise<Buffer> {
   return canvas.toBuffer('image/png')
 }
 
-// Re-render the same data in a plain payroll/ADP-style layout (not the IRS red
-// form). Amounts carry a dollar sign here to also exercise the $-stripping rule.
-async function adpStyle(fd: FormData): Promise<Buffer> {
+// Plain payroll/ADP-style cell renderer shared by both forms. Amounts carry a dollar
+// sign to also exercise the $-stripping rule.
+function styleCanvas(title: string, subtitle: string) {
   const W = 1700
   const H = 2200
   const canvas = createCanvas(W, H)
@@ -132,10 +129,9 @@ async function adpStyle(fd: FormData): Promise<Buffer> {
   ctx.fillRect(0, 0, W, H)
   ctx.fillStyle = '#111111'
   ctx.font = 'bold 46px sans-serif'
-  ctx.fillText('Form W-2 Wage and Tax Statement', 80, 120)
+  ctx.fillText(title, 80, 120)
   ctx.font = '28px sans-serif'
-  ctx.fillText('2025  Payroll provider copy', 80, 168)
-
+  ctx.fillText(subtitle, 80, 168)
   const cell = (label: string, value: string, x: number, y: number) => {
     ctx.strokeStyle = '#cccccc'
     ctx.strokeRect(x - 16, y - 30, 700, 92)
@@ -146,8 +142,14 @@ async function adpStyle(fd: FormData): Promise<Buffer> {
     ctx.font = '32px sans-serif'
     ctx.fillText(value, x, y + 42)
   }
-  const dollars = (v: string) => (v ? `$${v}` : '')
+  return { canvas, cell }
+}
 
+const dollars = (v: string) => (v ? `$${v}` : '')
+
+// Re-render the same W-2 data in a plain payroll/ADP-style layout (not the IRS red form).
+async function w2SubstituteStyle(fd: Record<string, string>): Promise<Buffer> {
+  const { canvas, cell } = styleCanvas('Form W-2 Wage and Tax Statement', '2025  Payroll provider copy')
   cell('c Employer name', fd.employerName, 80, 280)
   cell('b Employer EIN', fd.employerEIN, 840, 280)
   cell('e Employee name', fd.employeeName, 80, 420)
@@ -159,11 +161,24 @@ async function adpStyle(fd: FormData): Promise<Buffer> {
   return canvas.toBuffer('image/png')
 }
 
-export async function generateDegradedVariants(): Promise<VariantManifestEntry[]> {
+// Re-render the same 1099-NEC data in a plain payer/recipient layout.
+async function necSubstituteStyle(fd: Record<string, string>): Promise<Buffer> {
+  const { canvas, cell } = styleCanvas('Form 1099-NEC Nonemployee Compensation', '2025  Payer copy')
+  cell('PAYER name', fd.payerName, 80, 280)
+  cell('PAYER TIN', fd.payerTIN, 840, 280)
+  cell('RECIPIENT name', fd.recipientName, 80, 420)
+  cell('RECIPIENT TIN', fd.recipientTIN, 840, 420)
+  cell('1 Nonemployee compensation', dollars(fd.nonemployeeCompensation), 80, 560)
+  cell('4 Federal income tax withheld', dollars(fd.federalWithholding), 840, 560)
+  cell('RECIPIENT address', fd.recipientAddress, 80, 700)
+  return canvas.toBuffer('image/png')
+}
+
+export async function generateDegradedVariants(form: EvalForm): Promise<VariantManifestEntry[]> {
   const base = await readFile(new URL('clean.png', OUT))
   const cleanGt = await readJson<GroundTruth>('clean.groundtruth.json')
   const layout = await readJson<Layout>('clean.layout.json')
-  const formData = await readJson<FormData>('clean.formdata.json')
+  const formData = await readJson<Record<string, string>>('clean.formdata.json')
   const meta = await sharp(base).metadata()
   const W = meta.width ?? 0
   const H = meta.height ?? 0
@@ -183,7 +198,7 @@ export async function generateDegradedVariants(): Promise<VariantManifestEntry[]
     entries.push({ variant: name, image, mime, groundtruth: gtName })
   }
 
-  // Image quality, one axis each.
+  // Image quality, one axis each (form-agnostic).
   await emit('low_res', await sharp(base).resize({ width: 720 }).png().toBuffer(), 'image/png')
   await emit('jpeg_artifacts', await sharp(base).jpeg({ quality: 35 }).toBuffer(), 'image/jpeg')
   await emit('skew_3deg', await sharp(base).rotate(3, { background: '#ffffff' }).png().toBuffer(), 'image/png')
@@ -196,23 +211,29 @@ export async function generateDegradedVariants(): Promise<VariantManifestEntry[]
   // Layout and rendering.
   await emit('four_up', await fourUp(base, W), 'image/png')
   await emit('bw_scan', await sharp(base).grayscale().linear(1.25, -30).blur(0.6).png().toBuffer(), 'image/png')
-  await emit('substitute_style', await adpStyle(formData), 'image/png')
+  const substitute = form.formType === '1099-NEC' ? await necSubstituteStyle(formData) : await w2SubstituteStyle(formData)
+  await emit('substitute_style', substitute, 'image/png')
 
-  // Content edge case handled on the image side: redact one field, expect empty.
-  const illegibleGt: GroundTruth = {
-    scenario: 'illegible_field',
-    fields: {
-      ...cleanGt.fields,
-      wages: { ...cleanGt.fields.wages, printed: '', expected: '', expectEmpty: true },
-    },
+  // Content edge case handled on the image side: redact the first scored field, expect
+  // empty. The first scored key is a boxed amount on every supported form.
+  const redactKey = form.scoredKeys[0]
+  if (layout[redactKey]) {
+    const illegibleGt: GroundTruth = {
+      scenario: 'illegible_field',
+      fields: {
+        ...cleanGt.fields,
+        [redactKey]: { ...cleanGt.fields[redactKey], printed: '', expected: '', expectEmpty: true },
+      },
+    }
+    await emit('illegible_field', await redact(base, layout[redactKey]), 'image/png', illegibleGt)
   }
-  await emit('illegible_field', await redact(base, layout.wages), 'image/png', illegibleGt)
 
   return entries
 }
 
 // Standalone debug entry point.
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const entries = await generateDegradedVariants()
+  const form = getEvalForm(process.env.FORM ?? 'W-2')
+  const entries = await generateDegradedVariants(form)
   for (const e of entries) console.log(`degraded ${e.variant} -> out/${e.image}`)
 }

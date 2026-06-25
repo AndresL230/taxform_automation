@@ -1,4 +1,4 @@
-import { extractW2 } from '../extract/w2'
+import { extractDocument } from '../extract/extract'
 
 const ALLOWED = new Set(['application/pdf', 'image/png', 'image/jpeg'])
 
@@ -29,6 +29,6 @@ export async function handlePostDocument(request: Request, apiKey: string): Prom
   }
 
   const bytes = await file.arrayBuffer()
-  const result = await extractW2({ bytes, mimeType: file.type }, apiKey)
+  const result = await extractDocument({ bytes, mimeType: file.type }, apiKey)
   return json(result, 200)
 }
