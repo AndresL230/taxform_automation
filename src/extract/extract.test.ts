@@ -67,6 +67,27 @@ test('1099-NEC detection routes to the NEC def and returns 6 fields in order', a
   ])
 })
 
+test('1099-INT detection routes to the INT def and returns 8 fields in order', async () => {
+  state.classifyType = '1099-INT'
+  state.extractCalls = 0
+  state.extractPayload = {
+    isLegible: true,
+    fields: {
+      interestIncome: ex('1284.55'), earlyWithdrawalPenalty: ex('0.00'),
+      interestUSSavingsBonds: ex('0.00'), federalWithholding: ex('0.00'),
+      payerTIN: ex('98-7654321'), recipientTIN: ex('123-45-6789'),
+      payerName: ex('First National Bank'), recipientName: ex('Dana Lee'),
+    },
+  }
+  const result = await extractDocument(file, 'k')
+  expect(result.status).toBe('ready')
+  expect(result.detectedFormType).toBe('1099-INT')
+  expect(result.fields.map((f) => f.key)).toEqual([
+    'interestIncome', 'earlyWithdrawalPenalty', 'interestUSSavingsBonds', 'federalWithholding',
+    'payerTIN', 'recipientTIN', 'payerName', 'recipientName',
+  ])
+})
+
 test('an unsupported detected type fails without making an extract call', async () => {
   state.classifyType = '1098'
   state.extractCalls = 0

@@ -3,6 +3,7 @@ import type { FieldDef } from '../types'
 import type { ParsedExtraction } from './build'
 import { W2_FORM } from './w2'
 import { NEC_FORM } from './nec'
+import { INT_FORM } from './int'
 
 export type FormDefinition = {
   formType: string
@@ -17,6 +18,7 @@ export type FormDefinition = {
 export const FORM_REGISTRY: Record<string, FormDefinition> = {
   [W2_FORM.formType]: W2_FORM,
   [NEC_FORM.formType]: NEC_FORM,
+  [INT_FORM.formType]: INT_FORM,
 }
 
 export const supportedFormTypes = Object.keys(FORM_REGISTRY)
@@ -27,6 +29,7 @@ export function normalizeFormType(raw: string): string {
   const compact = raw.trim().toUpperCase().replace(/[\s_]+/g, '-')
   if (compact === 'W-2' || compact === 'W2') return 'W-2'
   if (compact === '1099-NEC' || compact === '1099NEC') return '1099-NEC'
+  if (compact === '1099-INT' || compact === '1099INT') return '1099-INT'
   return raw.trim()
 }
 
