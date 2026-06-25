@@ -95,7 +95,7 @@ export default function Review() {
           <p className="text-muted">This document is still processing…</p>
         ) : doc.status === 'failed' ? (
           <div className="rounded-[3px] border border-failed/40 bg-failed-bg px-4 py-3 text-sm text-failed">
-            Extraction failed for this document. It can't be reviewed — re-upload the file to try again.
+            Extraction failed for this document. It can't be reviewed, re-upload the file to try again.
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
