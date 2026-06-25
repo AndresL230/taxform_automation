@@ -23,6 +23,8 @@ const SAMPLES: { image: string; mime: string; out: string; form: string }[] = [
   { image: 'w2-sample.png', mime: 'image/png', out: 'acme', form: 'W-2' },
   // Add a 1099-NEC sample here once you place one in src/assets/, for example:
   // { image: 'nec-sample.png', mime: 'image/png', out: 'nec', form: '1099-NEC' },
+  // { image: 'int-sample.png', mime: 'image/png', out: 'int', form: '1099-INT' },
+  // { image: 'div-sample.png', mime: 'image/png', out: 'div', form: '1099-DIV' },
 ]
 
 for (const s of SAMPLES) {

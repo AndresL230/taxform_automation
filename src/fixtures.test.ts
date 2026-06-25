@@ -1,7 +1,7 @@
 import { fixtures } from './fixtures'
 
-test('there are 6 documents covering ready, needs_review, and failed', () => {
-  expect(fixtures).toHaveLength(6)
+test('there are 8 documents covering ready, needs_review, and failed', () => {
+  expect(fixtures).toHaveLength(8)
   const statuses = fixtures.map((d) => d.status)
   expect(statuses).toContain('ready')
   expect(statuses).toContain('needs_review')
@@ -10,7 +10,7 @@ test('there are 6 documents covering ready, needs_review, and failed', () => {
 })
 
 test('ready docs have their form field count, confident and non-empty, unedited', () => {
-  const counts: Record<string, number> = { 'W-2': 7, '1099-NEC': 6 }
+  const counts: Record<string, number> = { 'W-2': 7, '1099-NEC': 6, '1099-INT': 8, '1099-DIV': 8 }
   for (const d of fixtures.filter((d) => d.status === 'ready')) {
     expect(d.fields).toHaveLength(counts[d.formType])
     expect(d.fields.every((f) => f.value !== '' && f.confidence >= 0.7)).toBe(true)
