@@ -1,0 +1,13 @@
+{
+  "status": "needs_review",
+  "detectedFormType": "W-2",
+  "fields": [
+    { "key": "wages", "label": "Wages, tips, other comp.", "box": "1", "value": "60000.00", "originalValue": "60000.00", "confidence": 0.97, "type": "currency", "bbox": { "page": 1, "x": 54.0, "y": 13.8, "w": 18.5, "h": 6.0 } },
+    { "key": "federalWithholding", "label": "Federal income tax withheld", "box": "2", "value": "8400.00", "originalValue": "8400.00", "confidence": 0.92, "type": "currency", "bbox": { "page": 1, "x": 72.5, "y": 13.8, "w": 22.0, "h": 6.0 } },
+    { "key": "socialSecurityWages", "label": "Social security wages", "box": "3", "value": "62000.00", "originalValue": "62000.00", "confidence": 0.61, "type": "currency", "bbox": { "page": 1, "x": 54.0, "y": 19.8, "w": 18.5, "h": 6.0 } },
+    { "key": "employerEIN", "label": "Employer EIN", "box": "b", "value": "12-3456789", "originalValue": "12-3456789", "confidence": 0.95, "type": "ein", "bbox": { "page": 1, "x": 5.5, "y": 13.8, "w": 48.5, "h": 6.0 } },
+    { "key": "employeeSSN", "label": "Employee SSN", "box": "a", "value": "123-45-6789", "originalValue": "123-45-6789", "confidence": 0.64, "type": "ssn", "bbox": { "page": 1, "x": 25.0, "y": 8.5, "w": 21.0, "h": 5.0 } },
+    { "key": "employeeName", "label": "Employee name", "box": "e", "value": "John Q. Doe", "originalValue": "John Q. Doe", "confidence": 0.89, "type": "text", "bbox": { "page": 1, "x": 5.5, "y": 41.5, "w": 48.5, "h": 6.0 } },
+    { "key": "employerName", "label": "Employer name", "box": "c", "value": "Contoso Freight Inc.", "originalValue": "Contoso Freight Inc.", "confidence": 0.9, "type": "text", "bbox": { "page": 1, "x": 5.5, "y": 19.3, "w": 48.5, "h": 16.0 } }
+  ]
+}
