@@ -24,7 +24,7 @@ Anything else classifies as unsupported and comes back failed with the message
 `Detected {type}, not a supported form.`
 
 Out of scope for now: 1099-B composites and Schedule K-1 (multi-page, hundreds of
-transaction lines, high layout variance), in-app PDF rendering, and auth.
+transaction lines, high layout variance) and auth.
 
 ## How it works
 
@@ -49,6 +49,10 @@ as printed, masking preserved.
 
 The extraction model is Gemini (`gemini-3.5-flash`) via `@google/genai`, with Zod
 validating every response.
+
+On the review page the actual document is rendered next to the fields: PDFs are
+drawn with pdf.js (loaded lazily, only when a PDF is viewed) and images render
+directly, and clicking a field highlights its bounding box on the document.
 
 ### Adding a form
 
