@@ -24,3 +24,10 @@ export type Document = {
   reviewedAt: string | null
   error?: string
 }
+
+export type ExtractionResult = {
+  fields: Field[]
+  status: DocStatus
+  detectedFormType: string
+  error?: string
+}
