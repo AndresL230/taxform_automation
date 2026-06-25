@@ -1,5 +1,5 @@
 import { buildDocument, buildFormSchemas, type ParsedExtraction } from './build'
-import type { FieldDef, Field } from '../types'
+import type { FieldDef } from '../types'
 
 const FIELDS = [
   { key: 'a', box: '1', label: 'Alpha', type: 'currency' },

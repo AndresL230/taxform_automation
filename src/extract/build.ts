@@ -61,7 +61,9 @@ export function buildFormSchemas(fieldKeys: readonly string[]): {
   const zodFields: Record<string, z.ZodTypeAny> = {}
   for (const k of fieldKeys) zodFields[k] = Extracted
   const validator = z.object({ isLegible: z.boolean(), fields: z.object(zodFields) })
-  return { responseSchema, validate: (raw: unknown): ParsedExtraction => validator.parse(raw) }
+  // The dynamic-record shape erases per-field value types to unknown; the cast is sound
+  // because every zodFields entry validates as Extracted at runtime.
+  return { responseSchema, validate: (raw: unknown): ParsedExtraction => validator.parse(raw) as ParsedExtraction }
 }
 
 // Backend join. The model never generates the field constants. Identical join and
