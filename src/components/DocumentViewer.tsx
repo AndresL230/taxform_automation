@@ -1,9 +1,26 @@
+import { useEffect, useRef } from 'react'
 import type { BBox } from '../types'
+import { renderPdfFirstPage } from '../lib/pdf'
 
-export default function DocumentViewer({ fileUrl, highlight }: { fileUrl: string; highlight: BBox | null }) {
+type Props = { fileUrl: string; mimeType?: string; highlight: BBox | null }
+
+export default function DocumentViewer({ fileUrl, mimeType, highlight }: Props) {
+  const isPdf = mimeType === 'application/pdf' || fileUrl.toLowerCase().endsWith('.pdf')
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!isPdf || !canvas) return
+    void renderPdfFirstPage(fileUrl, canvas).catch(() => {})
+  }, [isPdf, fileUrl])
+
   return (
     <div className="relative">
-      <img src={fileUrl} alt="Tax document" className="block w-full" />
+      {isPdf ? (
+        <canvas ref={canvasRef} data-testid="pdf-canvas" className="block w-full" />
+      ) : (
+        <img src={fileUrl} alt="Tax document" className="block w-full" />
+      )}
       {highlight && (
         <div
           data-testid="bbox-highlight"

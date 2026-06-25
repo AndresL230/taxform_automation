@@ -1,6 +1,6 @@
 import type { Document, ExtractionResult } from '../types'
 
-export type DocumentBase = Pick<Document, 'id' | 'filename' | 'fileUrl' | 'reviewedAt'>
+export type DocumentBase = Pick<Document, 'id' | 'filename' | 'fileUrl' | 'mimeType' | 'reviewedAt'>
 
 export function applyExtraction(base: DocumentBase, result: ExtractionResult): Document {
   return {

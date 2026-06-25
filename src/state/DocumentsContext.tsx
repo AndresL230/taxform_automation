@@ -45,12 +45,12 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       objectUrlsRef.current.push(fileUrl)
 
       const provisional: Document = {
-        id, filename: file.name, fileUrl, formType: '',
+        id, filename: file.name, fileUrl, mimeType: file.type, formType: '',
         status: 'processing', reviewedAt: null, fields: [],
       }
       setDocuments((prev) => [provisional, ...prev])
 
-      const base = { id, filename: file.name, fileUrl, reviewedAt: null }
+      const base = { id, filename: file.name, fileUrl, mimeType: file.type, reviewedAt: null }
       postExtraction(file)
         .then((result) => applyExtraction(base, result))
         .catch((err) =>

@@ -4,6 +4,9 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Review from './Review'
 import { DocumentsProvider } from '../state/DocumentsContext'
 
+// The demo documents are PDFs; stub the pdf.js renderer so jsdom never loads pdf.js.
+vi.mock('../lib/pdf', () => ({ renderPdfFirstPage: () => Promise.resolve() }))
+
 const renderAt = (path: string) =>
   render(
     <DocumentsProvider>
@@ -22,7 +25,7 @@ test('unknown id shows not-found', () => {
 
 test('renders fields and highlights the clicked field', async () => {
   renderAt('/review/doc-jdoe')
-  expect(screen.getByText('jdoe_w2_blurry.jpg')).toBeInTheDocument()
+  expect(screen.getByText('jdoe_w2_blurry.pdf')).toBeInTheDocument()
   expect(screen.queryByTestId('bbox-highlight')).toBeNull()
   await userEvent.click(screen.getByText('Wages, tips, other comp.'))
   expect(screen.getByTestId('bbox-highlight')).toBeInTheDocument()

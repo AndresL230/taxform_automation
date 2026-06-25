@@ -20,6 +20,7 @@ export type Document = {
   id: string
   filename: string
   fileUrl: string
+  mimeType?: string
   formType: string
   status: DocStatus
   fields: Field[]

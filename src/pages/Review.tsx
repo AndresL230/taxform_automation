@@ -102,7 +102,7 @@ export default function Review() {
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
               <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Document</div>
               <div className="p-3.5">
-                <DocumentViewer fileUrl={doc.fileUrl} highlight={highlight} />
+                <DocumentViewer fileUrl={doc.fileUrl} mimeType={doc.mimeType} highlight={highlight} />
               </div>
             </section>
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
