@@ -4,7 +4,7 @@ import { expect, test, vi } from 'vitest'
 const { FAKE } = vi.hoisted(() => ({
   FAKE: {
     detectedFormType: 'W-2',
-    isLegibleW2: true,
+    isLegible: true,
     fields: Object.fromEntries(
       ['wages', 'federalWithholding', 'socialSecurityWages', 'employerEIN', 'employeeSSN', 'employeeName', 'employerName'].map(
         (k) => [k, { value: 'x', confidence: 0.95, bbox: { page: 1, x: 0, y: 0, w: 1, h: 1 } }],
