@@ -23,3 +23,16 @@
 @layer base {
   body { @apply bg-paper text-ink font-sans antialiased; }
 }
+
+@keyframes indeterminate-slide {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(360%); }
+}
+
+@layer utilities {
+  .animate-indeterminate { animation: indeterminate-slide 1.1s ease-in-out infinite; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-indeterminate { animation: none; }
+}

@@ -15,10 +15,11 @@ const READY_RESULT: ExtractionResult = {
 }
 
 function Harness() {
-  const { documents, addDocuments, updateField, markReviewed } = useDocuments()
+  const { documents, batch, addDocuments, updateField, markReviewed } = useDocuments()
   return (
     <div>
       <span data-testid="count">{documents.length}</span>
+      <span data-testid="batch">{batch ? `${batch.done}/${batch.total}` : 'none'}</span>
       <span data-testid="first-id">{documents[0]?.id}</span>
       <span data-testid="first-status">{documents[0]?.status}</span>
       <span data-testid="first-fileurl">{documents[0]?.fileUrl}</span>
@@ -72,6 +73,17 @@ test('a non-2xx response flips the upload to failed', async () => {
   setup()
   await act(async () => { screen.getByText('add').click() })
   await waitFor(() => expect(screen.getByTestId('first-status').textContent).toBe('failed'))
+})
+
+test('batch progress tracks the run and clears when every document is done', async () => {
+  let resolveFetch: (value: unknown) => void = () => {}
+  ;(fetch as ReturnType<typeof vi.fn>).mockReturnValue(new Promise((r) => { resolveFetch = r }))
+  setup()
+  expect(screen.getByTestId('batch').textContent).toBe('none')
+  act(() => { screen.getByText('add').click() })
+  expect(screen.getByTestId('batch').textContent).toBe('0/1')
+  await act(async () => { resolveFetch({ ok: true, status: 200, json: async () => READY_RESULT }) })
+  expect(screen.getByTestId('batch').textContent).toBe('none')
 })
 
 test('updateField changes a field value', () => {

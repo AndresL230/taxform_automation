@@ -20,3 +20,10 @@ test('processing rows do not have a review link', () => {
   const row = screen.getByText('busy.pdf').closest('tr')!
   expect(within(row).queryByRole('link')).toBeNull()
 })
+
+test('processing rows show an animated extracting indicator, not a static pill', () => {
+  render(<MemoryRouter><DocumentTable documents={docs} /></MemoryRouter>)
+  const row = screen.getByText('busy.pdf').closest('tr')!
+  expect(within(row).getByRole('status')).toHaveTextContent(/extracting/i)
+  expect(within(row).queryByText('Processing')).toBeNull()
+})

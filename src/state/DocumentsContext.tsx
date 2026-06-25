@@ -3,8 +3,11 @@ import type { Document, ExtractionResult } from '../types'
 import { applyExtraction } from '../lib/applyExtraction'
 import { fixtures } from '../fixtures'
 
+type BatchProgress = { done: number; total: number }
+
 type DocumentsContextValue = {
   documents: Document[]
+  batch: BatchProgress | null
   addDocuments(files: File[]): void
   updateField(docId: string, key: string, value: string): void
   markReviewed(docId: string): void
@@ -23,6 +26,8 @@ async function postExtraction(file: File): Promise<ExtractionResult> {
 
 export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const [documents, setDocuments] = useState<Document[]>(fixtures)
+  // Batch extraction progress for the active upload run; null when nothing is in flight.
+  const [batch, setBatch] = useState<BatchProgress | null>(null)
   const objectUrlsRef = useRef<string[]>([])
 
   // Revoke any object URLs created for uploads when the provider unmounts.
@@ -32,6 +37,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const addDocuments = useCallback((files: File[]) => {
+    if (files.length === 0) return
+    setBatch((b) => ({ done: b?.done ?? 0, total: (b?.total ?? 0) + files.length }))
     files.forEach((file) => {
       const id = crypto.randomUUID()
       const fileUrl = URL.createObjectURL(file)
@@ -54,6 +61,12 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
         )
         .then((merged) => {
           setDocuments((prev) => prev.map((d) => (d.id === id ? merged : d)))
+          // Check this document off the batch; clear the banner once the run is done.
+          setBatch((b) => {
+            if (!b) return b
+            const done = b.done + 1
+            return done >= b.total ? null : { ...b, done }
+          })
         })
     })
   }, [])
@@ -75,8 +88,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const getDocument = useCallback((id: string) => documents.find((d) => d.id === id), [documents])
 
   const value = useMemo(
-    () => ({ documents, addDocuments, updateField, markReviewed, getDocument }),
-    [documents, addDocuments, updateField, markReviewed, getDocument],
+    () => ({ documents, batch, addDocuments, updateField, markReviewed, getDocument }),
+    [documents, batch, addDocuments, updateField, markReviewed, getDocument],
   )
 
   return <DocumentsContext.Provider value={value}>{children}</DocumentsContext.Provider>

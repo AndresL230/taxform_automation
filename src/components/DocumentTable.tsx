@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Document } from '../types'
 import StatusPill from './StatusPill'
+import ProcessingIndicator from './ProcessingIndicator'
 import FormTypeBadge from './FormTypeBadge'
 
 const TH = 'px-3.5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted'
@@ -22,7 +23,9 @@ export default function DocumentTable({ documents }: { documents: Document[] }) 
           <tr key={d.id}>
             <td className={`${TD} font-medium`}>{d.filename}</td>
             <td className={TD}><FormTypeBadge formType={d.formType} /></td>
-            <td className={TD}><StatusPill status={d.status} /></td>
+            <td className={TD}>
+              {d.status === 'processing' ? <ProcessingIndicator /> : <StatusPill status={d.status} />}
+            </td>
             <td className={`${TD} text-right`}>
               {d.status === 'processing' ? (
                 <span className="text-muted/50">Review →</span>
