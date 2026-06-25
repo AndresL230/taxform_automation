@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from '@google/genai'
 import type { Schema } from '@google/genai'
 import { z } from 'zod'
 import { toBase64 } from '../lib/bytes'
-import type { Document, DocStatus, Field } from '../types'
+import type { DocStatus, ExtractionResult, Field } from '../types'
 
 const MODEL = 'gemini-3.5-flash'
 
@@ -163,6 +163,9 @@ export function buildW2Document(parsed: W2Extraction): { fields: Field[]; status
       originalValue: ex.value,
       confidence: ex.confidence,
       type: f.type,
+      // bbox normalization seam: the prompt asks Gemini for 0 to 100 x/y/w/h, so this
+      // is an identity pass-through today. Any future conversion (for example 0 to 1000
+      // or corner coordinates) goes HERE, so fixtures stay 0 to 100 and production matches.
       bbox: ex.bbox,
     }
   })
@@ -182,15 +185,7 @@ export function buildW2Document(parsed: W2Extraction): { fields: Field[]; status
 export async function extractW2(
   file: { bytes: ArrayBuffer | Uint8Array; mimeType: string },
   apiKey: string,
-): Promise<Document> {
-  const base = {
-    id: crypto.randomUUID(),
-    filename: '',
-    fileUrl: '',
-    formType: 'W-2',
-    reviewedAt: null,
-  } as const
-
+): Promise<ExtractionResult> {
   try {
     const data = toBase64(file.bytes)
     const ai = new GoogleGenAI({ apiKey })
@@ -209,12 +204,12 @@ export async function extractW2(
     if (!raw) throw new Error('Empty response from model')
     const parsed = W2Extraction.parse(JSON.parse(raw))
     const { fields, status } = buildW2Document(parsed)
-    return { ...base, status, fields }
+    return { fields, status, detectedFormType: parsed.detectedFormType }
   } catch (err) {
     return {
-      ...base,
-      status: 'failed',
       fields: [],
+      status: 'failed',
+      detectedFormType: 'unknown',
       error: err instanceof Error ? err.message : String(err),
     }
   }

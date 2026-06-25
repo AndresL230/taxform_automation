@@ -1,4 +1,4 @@
-import { handleGetDocument, handleGetDocuments, handlePostDocument } from './documents'
+import { handlePostDocument } from './documents'
 
 function methodNotAllowed(allow: string[]): Response {
   return new Response(JSON.stringify({ error: 'Method not allowed.' }), {
@@ -12,14 +12,7 @@ export async function handleApi(request: Request, env: { GEMINI_API_KEY: string 
 
   if (pathname === '/api/documents') {
     if (request.method === 'POST') return handlePostDocument(request, env.GEMINI_API_KEY)
-    if (request.method === 'GET') return handleGetDocuments()
-    return methodNotAllowed(['GET', 'POST'])
-  }
-
-  const match = pathname.match(/^\/api\/documents\/([^/]+)$/)
-  if (match) {
-    if (request.method === 'GET') return handleGetDocument(decodeURIComponent(match[1]))
-    return methodNotAllowed(['GET'])
+    return methodNotAllowed(['POST'])
   }
 
   return new Response(JSON.stringify({ error: 'Not found.' }), {

@@ -1,7 +1,4 @@
 import { extractW2 } from '../extract/w2'
-import { toDataUrl } from '../lib/bytes'
-import * as store from '../documents/store'
-import type { Document } from '../types'
 
 const ALLOWED = new Set(['application/pdf', 'image/png', 'image/jpeg'])
 
@@ -32,21 +29,6 @@ export async function handlePostDocument(request: Request, apiKey: string): Prom
   }
 
   const bytes = await file.arrayBuffer()
-  const extracted = await extractW2({ bytes, mimeType: file.type }, apiKey)
-  const document: Document = {
-    ...extracted,
-    filename: file.name,
-    fileUrl: toDataUrl(bytes, file.type),
-  }
-  store.put(document)
-  return json(document, 200)
-}
-
-export function handleGetDocuments(): Response {
-  return json(store.list(), 200)
-}
-
-export function handleGetDocument(id: string): Response {
-  const doc = store.get(id)
-  return doc ? json(doc, 200) : json({ error: 'Document not found.' }, 404)
+  const result = await extractW2({ bytes, mimeType: file.type }, apiKey)
+  return json(result, 200)
 }

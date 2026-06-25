@@ -11,7 +11,3 @@ export function toBase64(bytes: ArrayBuffer | Uint8Array): string {
   }
   return btoa(binary)
 }
-
-export function toDataUrl(bytes: ArrayBuffer | Uint8Array, mimeType: string): string {
-  return `data:${mimeType};base64,${toBase64(bytes)}`
-}
