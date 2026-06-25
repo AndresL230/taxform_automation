@@ -6,7 +6,7 @@ import type { FormDefinition } from './registry'
 // --- Classification (first pass) ---
 export const CLASSIFY_PROMPT = `You are a tax-document classifier. Identify which U.S. tax
 form this document is. Respond with the form type only, using the official name when you
-recognize it (for example "W-2", "1099-NEC", "1099-INT", "1098", "1040"). If you cannot
+recognize it (for example "W-2", "1099-NEC", "1099-INT", "1099-DIV", "1098", "1040"). If you cannot
 identify it, respond "unknown". Do not extract field values. Return only the JSON object
 defined by the schema.`
 
