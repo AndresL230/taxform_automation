@@ -100,7 +100,7 @@ async function fourUp(base: Buffer, W: number): Promise<Buffer> {
   const m = await sharp(half).metadata()
   const hw = m.width ?? Math.round(W / 2)
   const hh = m.height ?? 0
-  return sharp({ create: { width: hw * 2, height: hh * 2, channels: 3, background: '#ffffff' } })
+  return sharp({ create: { width: hw * 2, height: hh * 2, channels: 4, background: { r: 255, g: 255, b: 255, alpha: 1 } } })
     .composite([
       { input: half, left: 0, top: 0 },
       { input: half, left: hw, top: 0 },

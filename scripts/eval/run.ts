@@ -13,7 +13,7 @@ const OUT = new URL('./out/', import.meta.url)
 const RESULTS = new URL('./results.md', import.meta.url)
 
 async function buildManifest(): Promise<VariantManifestEntry[]> {
-  if (process.env.SKIP_GEN) {
+  if (process.env.SKIP_GEN === '1') {
     return JSON.parse(await readFile(new URL('manifest.json', OUT), 'utf8'))
   }
   const render = await generateRenderVariants()
