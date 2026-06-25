@@ -502,16 +502,19 @@ test('seeds from fixtures', () => {
 })
 
 test('upload creates a provisional processing doc, then merges the extraction', async () => {
-  ;(fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true, status: 200, json: async () => READY_RESULT })
+  // Hold the POST open so the provisional (processing) state is observable before the merge.
+  let resolveFetch: (value: unknown) => void = () => {}
+  ;(fetch as ReturnType<typeof vi.fn>).mockReturnValue(new Promise((r) => { resolveFetch = r }))
   setup()
-  await act(async () => { screen.getByText('add').click() })
+  act(() => { screen.getByText('add').click() })
   // provisional is prepended immediately as processing, with the client object url
   expect(screen.getByTestId('count').textContent).toBe('6')
   expect(screen.getByTestId('first-status').textContent).toBe('processing')
   expect(screen.getByTestId('first-fileurl').textContent).toBe('blob:mock-url')
   const provisionalId = screen.getByTestId('first-id').textContent
-  // after the POST resolves, the same doc keeps its id and fileUrl and gains fields/status
-  await waitFor(() => expect(screen.getByTestId('first-status').textContent).toBe('ready'))
+  // resolve the POST and flush the merge: the same doc keeps its id and fileUrl and gains fields/status
+  await act(async () => { resolveFetch({ ok: true, status: 200, json: async () => READY_RESULT }) })
+  expect(screen.getByTestId('first-status').textContent).toBe('ready')
   expect(screen.getByTestId('first-id').textContent).toBe(provisionalId)
   expect(screen.getByTestId('first-fileurl').textContent).toBe('blob:mock-url')
   expect(screen.getByTestId('first-fields').textContent).toBe('1')
