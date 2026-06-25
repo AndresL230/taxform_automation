@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "taxform-automation",
+  "account_id": "0bda3a2560ca48711ef7336cc421abed",
   "main": "src/worker.ts",
   "compatibility_date": "2026-06-01",
   // GEMINI_API_KEY is a secret, not a var. Production: `wrangler secret put GEMINI_API_KEY`.
