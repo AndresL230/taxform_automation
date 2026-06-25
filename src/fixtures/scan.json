@@ -1,5 +1,6 @@
 {
   "status": "failed",
-  "detectedFormType": "1099-NEC",
-  "fields": []
+  "detectedFormType": "1098",
+  "fields": [],
+  "error": "Detected 1098, not a supported form."
 }

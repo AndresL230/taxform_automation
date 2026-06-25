@@ -46,7 +46,7 @@ beforeEach(() => {
 
 test('seeds from fixtures', () => {
   setup()
-  expect(screen.getByTestId('count').textContent).toBe('5')
+  expect(screen.getByTestId('count').textContent).toBe('6')
 })
 
 test('upload creates a provisional processing doc, then merges the extraction', async () => {
@@ -56,7 +56,7 @@ test('upload creates a provisional processing doc, then merges the extraction', 
   setup()
   act(() => { screen.getByText('add').click() })
   // provisional is prepended immediately as processing, with the client object url
-  expect(screen.getByTestId('count').textContent).toBe('6')
+  expect(screen.getByTestId('count').textContent).toBe('7')
   expect(screen.getByTestId('first-status').textContent).toBe('processing')
   expect(screen.getByTestId('first-fileurl').textContent).toBe('blob:mock-url')
   const provisionalId = screen.getByTestId('first-id').textContent
