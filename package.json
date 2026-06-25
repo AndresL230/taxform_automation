@@ -11,7 +11,10 @@
     "test:watch": "vitest",
     "cf-dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
-    "capture-fixtures": "vite-node scripts/capture-fixtures.ts"
+    "capture-fixtures": "vite-node scripts/capture-fixtures.ts",
+    "eval:make": "vite-node scripts/eval/make-w2.ts",
+    "eval:degrade": "vite-node scripts/eval/degrade.ts",
+    "eval:run": "vite-node scripts/eval/run.ts"
   },
   "dependencies": {
     "@google/genai": "^2.10.0",
@@ -21,6 +24,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@napi-rs/canvas": "^0.1.100",
     "@tailwindcss/vite": "^4.3.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -29,6 +34,9 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.0.3",
     "jsdom": "^29.1.1",
+    "pdf-lib": "^1.17.1",
+    "pdf-to-img": "^4.5.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
@@ -37,6 +45,7 @@
     "wrangler": "^4.104.0"
   },
   "allowScripts": {
+    "canvas@3.1.0": true,
     "esbuild@0.28.1": true,
     "sharp@0.34.5": true,
     "workerd@1.20260623.1": true

@@ -6,3 +6,5 @@ vite.config.d.ts
 vite.config.js
 .wrangler/
 .dev.vars
+scripts/eval/out/
+scripts/eval/assets/fw2.pdf
