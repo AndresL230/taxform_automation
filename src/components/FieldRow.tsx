@@ -25,7 +25,7 @@ export default function FieldRow({ field, selected, onSelect, onChange }: Props)
           {field.label}
           {edited && <span className="ml-1 text-[10px] italic text-muted">· edited</span>}
         </div>
-        <div className="text-[10px] text-muted">Box {field.box}</div>
+        {field.box && <div className="text-[10px] text-muted">Box {field.box}</div>}
       </div>
       <input
         className={`flex-1 rounded-[3px] border bg-white px-2.5 py-1.5 text-xs tabular-nums text-ink outline-none focus:border-accent ${low ? 'border-review-line' : 'border-border'}`}
