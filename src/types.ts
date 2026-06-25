@@ -1,6 +1,8 @@
 export type DocStatus = 'processing' | 'ready' | 'needs_review' | 'failed'
 export type FieldType = 'currency' | 'ssn' | 'ein' | 'text'
 
+export type FieldDef = { key: string; box: string; label: string; type: FieldType }
+
 export type BBox = { page: number; x: number; y: number; w: number; h: number }
 
 export type Field = {
