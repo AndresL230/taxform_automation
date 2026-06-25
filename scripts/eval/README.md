@@ -11,11 +11,15 @@ form-parameterized: pick the form with the `FORM` env var (default `W-2`).
    `scripts/eval/assets/` (gitignored):
    - W-2: https://www.irs.gov/pub/irs-pdf/fw2.pdf saved as `scripts/eval/assets/fw2.pdf`
    - 1099-NEC: https://www.irs.gov/pub/irs-pdf/f1099nec.pdf saved as `scripts/eval/assets/f1099nec.pdf`
+   - 1099-INT: https://www.irs.gov/pub/irs-pdf/f1099int.pdf saved as `scripts/eval/assets/f1099int.pdf`
+   - 1099-DIV: https://www.irs.gov/pub/irs-pdf/f1099div.pdf saved as `scripts/eval/assets/f1099div.pdf`
 2. Confirm the AcroForm field names match the `fieldMap` for that form in `forms.ts`:
 
    ```
    DUMP_FIELDS=1 npx vite-node scripts/eval/make-form.ts                 # W-2
    FORM=1099-NEC DUMP_FIELDS=1 npx vite-node scripts/eval/make-form.ts   # 1099-NEC
+   FORM=1099-INT DUMP_FIELDS=1 npx vite-node scripts/eval/make-form.ts   # 1099-INT
+   FORM=1099-DIV DUMP_FIELDS=1 npx vite-node scripts/eval/make-form.ts   # 1099-DIV
    ```
 
    This prints every fillable field name and exits. If `make-form.ts` later stops with
@@ -28,6 +32,8 @@ form-parameterized: pick the form with the `FORM` env var (default `W-2`).
 ```
 GEMINI_API_KEY=... npx vite-node scripts/eval/run.ts                 # W-2 (default)
 FORM=1099-NEC GEMINI_API_KEY=... npx vite-node scripts/eval/run.ts   # 1099-NEC
+FORM=1099-INT GEMINI_API_KEY=... npx vite-node scripts/eval/run.ts   # 1099-INT
+FORM=1099-DIV GEMINI_API_KEY=... npx vite-node scripts/eval/run.ts   # 1099-DIV
 ```
 
 This generates the clean render plus all variants for the selected form into
@@ -41,8 +47,8 @@ an existing `out/` instead of regenerating images.
 npm test
 ```
 
-`normalize.test.ts`, `score.test.ts`, `groundtruth.test.ts`, and
-`groundtruth-nec.test.ts` run here. They never touch the API, the PDF, or sharp/canvas.
+`normalize.test.ts`, `score.test.ts`, `groundtruth.test.ts`, `groundtruth-nec.test.ts`,
+`groundtruth-int.test.ts`, and `groundtruth-div.test.ts` run here. They never touch the API, the PDF, or sharp/canvas.
 
 ## Invariants
 
