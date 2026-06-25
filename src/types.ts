@@ -20,7 +20,7 @@ export type Document = {
   id: string
   filename: string
   fileUrl: string
-  formType: 'W-2'
+  formType: string
   status: DocStatus
   fields: Field[]
   reviewedAt: string | null
