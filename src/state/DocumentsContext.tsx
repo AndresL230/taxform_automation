@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import type { Document } from '../types'
-import { fixtures, W2_FIELD_TEMPLATE } from '../fixtures'
-import w2Image from '../assets/w2-sample.png' // match fixtures' asset
+import type { Document, ExtractionResult } from '../types'
+import { applyExtraction } from '../lib/applyExtraction'
+import { fixtures } from '../fixtures'
 
 type DocumentsContextValue = {
   documents: Document[]
@@ -13,59 +13,66 @@ type DocumentsContextValue = {
 
 const DocumentsContext = createContext<DocumentsContextValue | null>(null)
 
+async function postExtraction(file: File): Promise<ExtractionResult> {
+  const body = new FormData()
+  body.append('file', file)
+  const res = await fetch('/api/documents', { method: 'POST', body })
+  if (!res.ok) throw new Error(`Extraction request failed (HTTP ${res.status}).`)
+  return (await res.json()) as ExtractionResult
+}
+
 export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const [documents, setDocuments] = useState<Document[]>(fixtures)
-  const seqRef = useRef(0)
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const objectUrlsRef = useRef<string[]>([])
 
-  // Cancel any pending simulated-extraction timers when the provider unmounts.
+  // Revoke any object URLs created for uploads when the provider unmounts.
   useEffect(() => {
-    const timers = timersRef.current
-    return () => timers.forEach(clearTimeout)
+    const urls = objectUrlsRef.current
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
   }, [])
 
   const addDocuments = useCallback((files: File[]) => {
-    const created = files.map<Document>((file) => ({
-      id: `doc-upload-${++seqRef.current}`, filename: file.name, fileUrl: w2Image, formType: 'W-2',
-      status: 'processing', reviewedAt: null, fields: [],
-    }))
-    setDocuments((prev) => [...created, ...prev])
-    created.forEach((doc) => {
-      const timer = setTimeout(() => {
-        setDocuments((prev) =>
-          prev.map((d) =>
-            d.id === doc.id
-              ? { ...d, status: 'needs_review', fields: W2_FIELD_TEMPLATE.map((f) => ({ ...f })) }
-              : d,
-          ),
+    files.forEach((file) => {
+      const id = crypto.randomUUID()
+      const fileUrl = URL.createObjectURL(file)
+      objectUrlsRef.current.push(fileUrl)
+
+      const provisional: Document = {
+        id, filename: file.name, fileUrl, formType: 'W-2',
+        status: 'processing', reviewedAt: null, fields: [],
+      }
+      setDocuments((prev) => [provisional, ...prev])
+
+      const base = { id, filename: file.name, fileUrl, reviewedAt: null }
+      postExtraction(file)
+        .then((result) => applyExtraction(base, result))
+        .catch((err) =>
+          applyExtraction(base, {
+            fields: [], status: 'failed', detectedFormType: 'unknown',
+            error: err instanceof Error ? err.message : 'Extraction request failed.',
+          }),
         )
-      }, 1500)
-      timersRef.current.push(timer)
+        .then((merged) => {
+          setDocuments((prev) => prev.map((d) => (d.id === id ? merged : d)))
+        })
     })
   }, [])
 
   const updateField = useCallback((docId: string, key: string, value: string) => {
     setDocuments((prev) =>
       prev.map((d) =>
-        d.id === docId
-          ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, value } : f)) }
-          : d,
+        d.id === docId ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, value } : f)) } : d,
       ),
     )
   }, [])
 
   const markReviewed = useCallback((docId: string) => {
     setDocuments((prev) =>
-      prev.map((d) =>
-        d.id === docId ? { ...d, status: 'ready', reviewedAt: new Date().toISOString() } : d,
-      ),
+      prev.map((d) => (d.id === docId ? { ...d, status: 'ready', reviewedAt: new Date().toISOString() } : d)),
     )
   }, [])
 
-  const getDocument = useCallback(
-    (id: string) => documents.find((d) => d.id === id),
-    [documents],
-  )
+  const getDocument = useCallback((id: string) => documents.find((d) => d.id === id), [documents])
 
   const value = useMemo(
     () => ({ documents, addDocuments, updateField, markReviewed, getDocument }),
