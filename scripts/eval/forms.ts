@@ -1,6 +1,7 @@
 import type { GroundTruth } from './types'
 import { makeScenario, SCORED_KEYS, type Scenario } from './groundtruth'
 import { makeNecScenario, NEC_SCORED_KEYS, type NecScenario } from './groundtruth-nec'
+import { makeIntScenario, INT_SCORED_KEYS, type IntScenario } from './groundtruth-int'
 
 // Eval-side config for one form. Distinct from the production FormDefinition: this also
 // carries the PDF asset, the AcroForm field map, and the faker scenario generator that
@@ -72,7 +73,33 @@ const NEC: EvalForm = {
   },
 }
 
-export const EVAL_FORMS: Record<string, EvalForm> = { 'W-2': W2, '1099-NEC': NEC }
+// INT AcroForm names are a best guess. Reconcile against the real f1099int.pdf with
+// DUMP_FIELDS=1 FORM=1099-INT npx vite-node scripts/eval/make-form.ts (see README).
+const INT: EvalForm = {
+  formType: '1099-INT',
+  asset: 'f1099int.pdf',
+  scenarios: ['clean', 'zero_withholding', 'masked_tin', 'large_values'],
+  scoredKeys: INT_SCORED_KEYS,
+  seeds: { clean: 21, zero_withholding: 22, masked_tin: 23, large_values: 24 },
+  fieldMap: {
+    payerName: 'topmostSubform[0].CopyB[0].LeftCol[0].f1_01[0]',
+    payerTIN: 'topmostSubform[0].CopyB[0].LeftCol[0].f1_02[0]',
+    recipientTIN: 'topmostSubform[0].CopyB[0].LeftCol[0].f1_03[0]',
+    recipientName: 'topmostSubform[0].CopyB[0].LeftCol[0].f1_04[0]',
+    recipientAddress: 'topmostSubform[0].CopyB[0].LeftCol[0].f1_05[0]',
+    accountNumber: 'topmostSubform[0].CopyB[0].LeftCol[0].f1_07[0]',
+    interestIncome: 'topmostSubform[0].CopyB[0].RightCol[0].f1_09[0]',
+    earlyWithdrawalPenalty: 'topmostSubform[0].CopyB[0].RightCol[0].f1_10[0]',
+    interestUSSavingsBonds: 'topmostSubform[0].CopyB[0].RightCol[0].f1_11[0]',
+    federalWithholding: 'topmostSubform[0].CopyB[0].RightCol[0].f1_12[0]',
+  },
+  make: (scenario, seed) => {
+    const r = makeIntScenario(scenario as IntScenario, seed)
+    return { formData: r.formData as Record<string, string>, groundTruth: r.groundTruth }
+  },
+}
+
+export const EVAL_FORMS: Record<string, EvalForm> = { 'W-2': W2, '1099-NEC': NEC, '1099-INT': INT }
 
 export function getEvalForm(formType: string): EvalForm {
   const form = EVAL_FORMS[formType]
