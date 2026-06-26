@@ -1,5 +1,5 @@
 import type { Schema } from '@google/genai'
-import type { FieldDef } from '../types'
+import type { FieldDef, Field, ValidationMessage } from '../types'
 import type { ParsedExtraction } from './build'
 import { W2_FORM } from './w2'
 import { NEC_FORM } from './nec'
@@ -12,6 +12,7 @@ export type FormDefinition = {
   responseSchema: Schema
   validate: (raw: unknown) => ParsedExtraction
   promptFragment: string
+  crossChecks?: (fields: Field[]) => ValidationMessage[]
 }
 
 // Registry keyed by canonical form type. Adding a form is a new entry here plus its

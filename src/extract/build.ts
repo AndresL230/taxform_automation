@@ -1,7 +1,7 @@
 import { Type } from '@google/genai'
 import type { Schema } from '@google/genai'
 import { z } from 'zod'
-import type { DocStatus, Field, FieldDef } from '../types'
+import type { DocStatus, Field, FieldDef, ValidationMessage } from '../types'
 
 // Shared per-field validated shape, identical across forms.
 const BBoxZ = z.object({
@@ -67,11 +67,12 @@ export function buildFormSchemas(fieldKeys: readonly string[]): {
 }
 
 // Backend join. The model never generates the field constants. Identical join and
-// status logic for every form, driven by formDef.fieldDefs.
+// status logic for every form, driven by formDef.fieldDefs. crossChecks (optional)
+// runs semantic checks on the built fields and is an independent reason to review.
 export function buildDocument(
   parsed: ParsedExtraction,
-  formDef: { fieldDefs: readonly FieldDef[] },
-): { fields: Field[]; status: DocStatus } {
+  formDef: { fieldDefs: readonly FieldDef[]; crossChecks?: (fields: Field[]) => ValidationMessage[] },
+): { fields: Field[]; status: DocStatus; validationMessages: ValidationMessage[] } {
   const fields: Field[] = formDef.fieldDefs.map((f): Field => {
     const ex = parsed.fields[f.key]
     return {
@@ -83,21 +84,27 @@ export function buildDocument(
       confidence: ex.confidence,
       type: f.type,
       // bbox normalization seam: the prompt asks Gemini for 0 to 100 x/y/w/h, so this
-      // is an identity pass-through today. Any future conversion (for example 0 to 1000
-      // or corner coordinates) goes HERE, shared by all forms, so fixtures stay 0 to 100
-      // and production matches.
+      // is an identity pass-through today, UNVERIFIED (the eval has not run). Malformed
+      // boxes degrade to a "source not located" state at render time (see lib/bbox.ts),
+      // we do not rewrite numbers here. If an eval run shows a systematic space (for
+      // example 0 to 1000), the real fix is a scaling transform HERE, shared by all
+      // forms, so fixtures stay 0 to 100 and production matches.
       bbox: ex.bbox,
     }
   })
 
+  const validationMessages = formDef.crossChecks ? formDef.crossChecks(fields) : []
+
   let status: DocStatus
   if (!parsed.isLegible) {
     status = 'failed'
-  } else if (fields.some((f) => f.value === '' || f.confidence < 0.7)) {
+  } else if (fields.some((f) => f.value === '' || f.confidence < 0.7) || validationMessages.length > 0) {
+    // Three independent reasons to review: empty value, low confidence, or a failed
+    // cross-check. The cross-check is NOT folded into the confidence test on purpose.
     status = 'needs_review'
   } else {
     status = 'ready'
   }
 
-  return { fields, status }
+  return { fields, status, validationMessages }
 }

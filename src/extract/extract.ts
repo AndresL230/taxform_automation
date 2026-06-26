@@ -50,10 +50,16 @@ export async function extractDocument(file: FileInput, apiKey: string): Promise<
     // 3. Extract with the form's own schema and prompt.
     const parsed = formDef.validate(await callModel(ai, buildExtractPrompt(formDef), formDef.responseSchema, inline))
 
-    // 4. Join + status.
-    const { fields, status } = buildDocument(parsed, formDef)
+    // 4. Join + status + cross-checks.
+    const { fields, status, validationMessages } = buildDocument(parsed, formDef)
     const error = status === 'failed' ? `Detected ${formDef.formType}, could not extract it reliably.` : undefined
-    return { fields, status, detectedFormType: formDef.formType, ...(error ? { error } : {}) }
+    return {
+      fields,
+      status,
+      detectedFormType: formDef.formType,
+      ...(validationMessages.length ? { validationMessages } : {}),
+      ...(error ? { error } : {}),
+    }
   } catch (err) {
     return {
       fields: [],

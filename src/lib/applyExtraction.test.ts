@@ -36,3 +36,13 @@ test('failed result carries the server error through and formType reflects detec
   expect(doc.formType).toBe('1098')
   expect(doc.error).toBe('Detected 1098, not a supported form.')
 })
+
+test('carries server validationMessages onto the document', () => {
+  const result: ExtractionResult = {
+    fields: [field('wages', 0.95)], status: 'needs_review', detectedFormType: 'W-2',
+    validationMessages: [{ fieldKey: 'wages', message: 'Not a valid dollar amount.' }],
+  }
+  expect(applyExtraction(base, result).validationMessages).toEqual([
+    { fieldKey: 'wages', message: 'Not a valid dollar amount.' },
+  ])
+})

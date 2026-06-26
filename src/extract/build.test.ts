@@ -36,3 +36,15 @@ test('buildFormSchemas validate accepts a well-formed payload and rejects a miss
   expect(validate({ isLegible: true, fields: ok() }).isLegible).toBe(true)
   expect(() => validate({ isLegible: true, fields: { a: ex('1', 0.9) } })).toThrow()
 })
+
+test('a non-empty crossChecks result forces needs_review independently of confidence', () => {
+  const formDef = { fieldDefs: FIELDS, crossChecks: () => [{ fieldKey: 'a', message: 'bad' }] }
+  const { status, validationMessages } = buildDocument({ isLegible: true, fields: ok() }, formDef)
+  expect(status).toBe('needs_review')
+  expect(validationMessages).toEqual([{ fieldKey: 'a', message: 'bad' }])
+})
+
+test('buildDocument returns an empty validationMessages when no crossChecks', () => {
+  const { validationMessages } = buildDocument({ isLegible: true, fields: ok() }, { fieldDefs: FIELDS })
+  expect(validationMessages).toEqual([])
+})
