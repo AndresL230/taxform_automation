@@ -10,7 +10,7 @@ test('there are 8 documents covering ready, needs_review, and failed', () => {
 })
 
 test('ready docs have their form field count, confident and non-empty, unedited', () => {
-  const counts: Record<string, number> = { 'W-2': 7, '1099-NEC': 6, '1099-INT': 8, '1099-DIV': 8 }
+  const counts: Record<string, number> = { 'W-2': 10, '1099-NEC': 6, '1099-INT': 8, '1099-DIV': 8 }
   for (const d of fixtures.filter((d) => d.status === 'ready')) {
     expect(d.fields).toHaveLength(counts[d.formType])
     expect(d.fields.every((f) => f.value !== '' && f.confidence >= 0.7)).toBe(true)
@@ -18,9 +18,9 @@ test('ready docs have their form field count, confident and non-empty, unedited'
   }
 })
 
-test('a needs_review doc has 7 fields with at least one below 0.7 confidence', () => {
+test('a needs_review doc has 10 fields with at least one below 0.7 confidence', () => {
   const nr = fixtures.find((d) => d.status === 'needs_review')!
-  expect(nr.fields).toHaveLength(7)
+  expect(nr.fields).toHaveLength(10)
   expect(nr.fields.some((f) => f.confidence < 0.7)).toBe(true)
 })
 
@@ -33,7 +33,8 @@ test('the failed doc has no fields and the server unsupported-form message', () 
 test('fields use the production W2_FIELDS keys in order', () => {
   const nr = fixtures.find((d) => d.status === 'needs_review')!
   expect(nr.fields.map((f) => f.key)).toEqual([
-    'wages', 'federalWithholding', 'socialSecurityWages', 'employerEIN', 'employeeSSN', 'employeeName', 'employerName',
+    'wages', 'federalWithholding', 'socialSecurityWages', 'socialSecurityTaxWithheld', 'medicareWages',
+    'medicareTaxWithheld', 'employerEIN', 'employeeSSN', 'employeeName', 'employerName',
   ])
 })
 

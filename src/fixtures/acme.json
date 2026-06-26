@@ -51,6 +51,36 @@
       }
     },
     {
+      "key": "socialSecurityTaxWithheld",
+      "label": "Social security tax withheld",
+      "box": "4",
+      "value": "5208.00",
+      "originalValue": "5208.00",
+      "confidence": 0.97,
+      "type": "currency",
+      "bbox": { "page": 1, "x": 74.44, "y": 22.09, "w": 19.35, "h": 3.49 }
+    },
+    {
+      "key": "medicareWages",
+      "label": "Medicare wages and tips",
+      "box": "5",
+      "value": "84000.00",
+      "originalValue": "84000.00",
+      "confidence": 0.96,
+      "type": "currency",
+      "bbox": { "page": 1, "x": 54.28, "y": 29.06, "w": 19.67, "h": 3.49 }
+    },
+    {
+      "key": "medicareTaxWithheld",
+      "label": "Medicare tax withheld",
+      "box": "6",
+      "value": "1218.00",
+      "originalValue": "1218.00",
+      "confidence": 0.95,
+      "type": "currency",
+      "bbox": { "page": 1, "x": 74.44, "y": 29.06, "w": 19.35, "h": 3.49 }
+    },
+    {
       "key": "employerEIN",
       "label": "Employer EIN",
       "box": "b",

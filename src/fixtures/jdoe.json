@@ -1,6 +1,12 @@
 {
   "status": "needs_review",
   "detectedFormType": "W-2",
+  "validationMessages": [
+    {
+      "fieldKey": "socialSecurityTaxWithheld",
+      "message": "Box 4 social security tax should be about 6.2% of Box 3 social security wages (expected 3844.00, got 3500.00)."
+    }
+  ],
   "fields": [
     {
       "key": "wages",
@@ -49,6 +55,36 @@
         "w": 19.67,
         "h": 3.49
       }
+    },
+    {
+      "key": "socialSecurityTaxWithheld",
+      "label": "Social security tax withheld",
+      "box": "4",
+      "value": "3500.00",
+      "originalValue": "3500.00",
+      "confidence": 0.9,
+      "type": "currency",
+      "bbox": { "page": 1, "x": 74.44, "y": 22.09, "w": 19.35, "h": 3.49 }
+    },
+    {
+      "key": "medicareWages",
+      "label": "Medicare wages and tips",
+      "box": "5",
+      "value": "62000.00",
+      "originalValue": "62000.00",
+      "confidence": 0.92,
+      "type": "currency",
+      "bbox": { "page": 1, "x": 54.28, "y": 29.06, "w": 19.67, "h": 3.49 }
+    },
+    {
+      "key": "medicareTaxWithheld",
+      "label": "Medicare tax withheld",
+      "box": "6",
+      "value": "899.00",
+      "originalValue": "899.00",
+      "confidence": 0.92,
+      "type": "currency",
+      "bbox": { "page": 1, "x": 74.44, "y": 29.06, "w": 19.35, "h": 3.49 }
     },
     {
       "key": "employerEIN",

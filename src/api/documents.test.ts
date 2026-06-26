@@ -1,17 +1,22 @@
 // @vitest-environment node
 import { expect, test, vi } from 'vitest'
 
-const { FAKE } = vi.hoisted(() => ({
-  FAKE: {
-    detectedFormType: 'W-2',
-    isLegible: true,
-    fields: Object.fromEntries(
-      ['wages', 'federalWithholding', 'socialSecurityWages', 'employerEIN', 'employeeSSN', 'employeeName', 'employerName'].map(
-        (k) => [k, { value: 'x', confidence: 0.95, bbox: { page: 1, x: 0, y: 0, w: 1, h: 1 } }],
+const { FAKE } = vi.hoisted(() => {
+  const values: Record<string, string> = {
+    wages: '1000.00', federalWithholding: '100.00', socialSecurityWages: '1000.00',
+    socialSecurityTaxWithheld: '62.00', medicareWages: '1000.00', medicareTaxWithheld: '14.50',
+    employerEIN: '12-3456789', employeeSSN: '123-45-6789', employeeName: 'Jordan Reyes', employerName: 'Northwind LLC',
+  }
+  return {
+    FAKE: {
+      detectedFormType: 'W-2',
+      isLegible: true,
+      fields: Object.fromEntries(
+        Object.entries(values).map(([k, v]) => [k, { value: v, confidence: 0.95, bbox: { page: 1, x: 0, y: 0, w: 1, h: 1 } }]),
       ),
-    ),
-  },
-}))
+    },
+  }
+})
 
 vi.mock('@google/genai', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@google/genai')>()
@@ -40,7 +45,7 @@ test('POST returns an ExtractionResult and fabricates no document fields', async
   const result = (await res.json()) as ExtractionResult & Record<string, unknown>
   expect(result.status).toBe('ready')
   expect(result.detectedFormType).toBe('W-2')
-  expect(result.fields).toHaveLength(7)
+  expect(result.fields).toHaveLength(10)
   // stateless: the server invents no document identity
   expect(result.id).toBeUndefined()
   expect(result.filename).toBeUndefined()

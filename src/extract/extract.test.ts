@@ -31,13 +31,14 @@ import { extractDocument } from './extract'
 const ex = (value: string, confidence = 0.95) => ({ value, confidence, bbox: { page: 1, x: 0, y: 0, w: 1, h: 1 } })
 const file = { bytes: new Uint8Array([1, 2, 3]), mimeType: 'image/png' }
 
-test('W-2 detection routes to the W-2 def and returns 7 fields', async () => {
+test('W-2 detection routes to the W-2 def and returns 10 fields', async () => {
   state.classifyType = 'W-2'
   state.extractCalls = 0
   state.extractPayload = {
     isLegible: true,
     fields: {
       wages: ex('58500.00'), federalWithholding: ex('7920.00'), socialSecurityWages: ex('60000.00'),
+      socialSecurityTaxWithheld: ex('3720.00'), medicareWages: ex('60000.00'), medicareTaxWithheld: ex('870.00'),
       employerEIN: ex('94-2719303'), employeeSSN: ex('532-19-7766'), employeeName: ex('Jordan A. Reyes'),
       employerName: ex('Northwind Logistics LLC'),
     },
@@ -45,7 +46,7 @@ test('W-2 detection routes to the W-2 def and returns 7 fields', async () => {
   const result = await extractDocument(file, 'k')
   expect(result.status).toBe('ready')
   expect(result.detectedFormType).toBe('W-2')
-  expect(result.fields).toHaveLength(7)
+  expect(result.fields).toHaveLength(10)
 })
 
 test('1099-NEC detection routes to the NEC def and returns 6 fields in order', async () => {
