@@ -1,4 +1,4 @@
-import { isFieldReviewed, reviewSummary, unreviewedCount, canBeReady } from './review'
+import { isFieldReviewed, reviewSummary, unreviewedCount, canBeReady, currentViolations, isOfficiallyReviewed } from './review'
 import type { Document, Field } from '../types'
 
 const fld = (over: Partial<Field>): Field => ({
@@ -14,6 +14,7 @@ test('isFieldReviewed: confirmed OR edited, not mere default', () => {
   expect(isFieldReviewed(fld({ confirmed: true }))).toBe(true)
   expect(isFieldReviewed(fld({ value: 'x', originalValue: 'y' }))).toBe(true)
   expect(isFieldReviewed(fld({}))).toBe(false)
+  expect(isFieldReviewed(fld({ acknowledged: true }))).toBe(true)
 })
 
 test('reviewSummary counts corrected, confirmed, remaining', () => {
@@ -27,8 +28,39 @@ test('reviewSummary counts corrected, confirmed, remaining', () => {
   expect(unreviewedCount(doc([fld({}), fld({ confirmed: true })]))).toBe(1)
 })
 
-test('canBeReady requires all fields resolved and no violations', () => {
+test('canBeReady requires every field reviewed', () => {
   expect(canBeReady(doc([fld({ confirmed: true }), fld({ value: 'x', originalValue: 'y' })]))).toBe(true)
   expect(canBeReady(doc([fld({ confirmed: true }), fld({})]))).toBe(false)
-  expect(canBeReady(doc([fld({ confirmed: true })], [{ fieldKey: 'k', message: 'bad' }]))).toBe(false)
+})
+
+test('currentViolations recomputes from current values', () => {
+  const flagged = [
+    fld({ key: 'socialSecurityWages', type: 'currency', value: '60000.00', originalValue: '60000.00' }),
+    fld({ key: 'socialSecurityTaxWithheld', type: 'currency', value: '3000.00', originalValue: '3720.00' }),
+  ]
+  expect(currentViolations(doc(flagged)).map((v) => v.fieldKey)).toEqual(['socialSecurityTaxWithheld'])
+  const fixed = flagged.map((f) => (f.key === 'socialSecurityTaxWithheld' ? { ...f, value: '3720.00' } : f))
+  expect(currentViolations(doc(fixed))).toEqual([])
+})
+
+test('canBeReady: a current violation blocks unless acknowledged', () => {
+  const fields = [
+    fld({ key: 'socialSecurityWages', type: 'currency', value: '60000.00', originalValue: '60000.00', confirmed: true }),
+    fld({ key: 'socialSecurityTaxWithheld', type: 'currency', value: '3000.00', originalValue: '3000.00', confirmed: true }),
+  ]
+  expect(canBeReady(doc(fields))).toBe(false)
+  const acked = fields.map((f) => (f.key === 'socialSecurityTaxWithheld' ? { ...f, acknowledged: true } : f))
+  expect(canBeReady(doc(acked))).toBe(true)
+})
+
+test('reviewSummary folds an acknowledged unchanged field into confirmed', () => {
+  expect(reviewSummary(doc([fld({ acknowledged: true })]))).toEqual({ total: 1, confirmed: 1, corrected: 0, remaining: 0 })
+})
+
+test('isOfficiallyReviewed is true only for ready with a reviewedAt', () => {
+  const base = (over: Partial<import('../types').Document>) => ({ ...doc([]), ...over })
+  expect(isOfficiallyReviewed(base({ status: 'ready', reviewedAt: '2026-01-01T00:00:00.000Z' }))).toBe(true)
+  expect(isOfficiallyReviewed(base({ status: 'ready', reviewedAt: null }))).toBe(false)
+  expect(isOfficiallyReviewed(base({ status: 'needs_review', reviewedAt: '2026-01-01T00:00:00.000Z' }))).toBe(false)
+  expect(isOfficiallyReviewed(base({ status: 'failed', reviewedAt: '2026-01-01T00:00:00.000Z' }))).toBe(false)
 })
