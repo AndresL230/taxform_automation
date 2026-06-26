@@ -7,12 +7,14 @@ type Props = {
   field: Field
   selected: boolean
   validationMessage?: string
+  acknowledged?: boolean
   onSelect: () => void
   onChange: (value: string) => void
   onConfirm: () => void
+  onAcknowledge?: () => void
 }
 
-export default function FieldRow({ field, selected, validationMessage, onSelect, onChange, onConfirm }: Props) {
+export default function FieldRow({ field, selected, validationMessage, acknowledged, onSelect, onChange, onConfirm, onAcknowledge }: Props) {
   const low = confidenceTier(field.confidence) === 'low'
   const edited = field.value !== field.originalValue
   const reviewed = isFieldReviewed(field)
@@ -63,12 +65,29 @@ export default function FieldRow({ field, selected, validationMessage, onSelect,
         </button>
         <ConfidenceIndicator confidence={field.confidence} />
       </div>
-      {flagged && (
-        <div data-testid="field-warning" className="flex items-start gap-1.5 bg-flag-bg px-3.5 pb-2.5 text-[11px] text-flag lg:px-5 lg:text-xs">
-          <span aria-hidden="true">!</span>
-          <span>{validationMessage}</span>
+      {flagged && (acknowledged ? (
+        <div data-testid="field-acknowledged" className="flex items-center justify-between gap-2 bg-paper-2 px-3.5 pb-2.5 pt-1 text-[11px] text-muted lg:px-5 lg:text-xs">
+          <span>Acknowledged as correct: {validationMessage}</span>
+          {onAcknowledge && (
+            <button type="button" aria-label={`Acknowledge ${field.label}`} aria-pressed={true}
+              onClick={(e) => { e.stopPropagation(); onAcknowledge() }}
+              className="shrink-0 rounded-[3px] border border-accent bg-accent px-2 py-0.5 text-white">
+              Acknowledged ✓
+            </button>
+          )}
         </div>
-      )}
+      ) : (
+        <div data-testid="field-warning" className="flex items-center justify-between gap-2 bg-flag-bg px-3.5 pb-2.5 pt-1 text-[11px] text-flag lg:px-5 lg:text-xs">
+          <span className="flex items-start gap-1.5"><span aria-hidden="true">!</span><span>{validationMessage}</span></span>
+          {onAcknowledge && (
+            <button type="button" aria-label={`Acknowledge ${field.label}`} aria-pressed={false}
+              onClick={(e) => { e.stopPropagation(); onAcknowledge() }}
+              className="shrink-0 rounded-[3px] border border-flag bg-white px-2 py-0.5 text-flag">
+              Mark correct as-is
+            </button>
+          )}
+        </div>
+      ))}
     </div>
   )
 }

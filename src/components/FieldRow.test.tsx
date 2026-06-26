@@ -57,7 +57,22 @@ test('a confirmed field reads as reviewed', () => {
   expect(screen.getByRole('button', { name: /confirm/i })).toHaveAttribute('aria-pressed', 'true')
 })
 
-test('renders a validation warning', () => {
-  render(<FieldRow field={base} selected={false} validationMessage="Not a valid dollar amount." onSelect={() => {}} onChange={() => {}} onConfirm={() => {}} />)
+test('renders a validation warning with an acknowledge control', () => {
+  render(<FieldRow field={base} selected={false} validationMessage="Not a valid dollar amount." onSelect={() => {}} onChange={() => {}} onConfirm={() => {}} onAcknowledge={() => {}} />)
   expect(screen.getByTestId('field-warning')).toHaveTextContent('Not a valid dollar amount.')
+  expect(screen.getByRole('button', { name: /acknowledge/i })).toHaveAttribute('aria-pressed', 'false')
+})
+
+test('acknowledge control fires onAcknowledge', async () => {
+  const onAcknowledge = vi.fn()
+  render(<FieldRow field={base} selected={false} validationMessage="Not a valid dollar amount." onSelect={() => {}} onChange={() => {}} onConfirm={() => {}} onAcknowledge={onAcknowledge} />)
+  await userEvent.click(screen.getByRole('button', { name: /acknowledge/i }))
+  expect(onAcknowledge).toHaveBeenCalled()
+})
+
+test('an acknowledged validation shows a distinct acknowledged treatment', () => {
+  render(<FieldRow field={base} selected={false} validationMessage="Not a valid dollar amount." acknowledged onSelect={() => {}} onChange={() => {}} onConfirm={() => {}} onAcknowledge={() => {}} />)
+  expect(screen.getByTestId('field-acknowledged')).toBeInTheDocument()
+  expect(screen.queryByTestId('field-warning')).toBeNull()
+  expect(screen.getByRole('button', { name: /acknowledge/i })).toHaveAttribute('aria-pressed', 'true')
 })
