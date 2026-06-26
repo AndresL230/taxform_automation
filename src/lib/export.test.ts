@@ -1,4 +1,4 @@
-import { toJSON, toCSV } from './export'
+import { toJSON, toCSV, toCombinedJSON, toCombinedCSV } from './export'
 import type { Document } from '../types'
 
 const doc: Document = {
@@ -23,4 +23,15 @@ test('toCSV emits header + a row per field and quotes commas', () => {
   expect(lines[0]).toBe('key,label,box,value,originalValue,confidence,type,reviewed')
   expect(lines[1]).toBe('wages,"Wages, tips, other comp.",1,"60,000.00","60,000.00",0.98,currency,false')
   expect(lines[2]).toBe('employer,"Employer, Inc.",c,"A, B Co","A, B Co",0.9,text,false')
+})
+
+test('toCombinedJSON round-trips an array of documents', () => {
+  expect(JSON.parse(toCombinedJSON([doc]))).toEqual([doc])
+})
+
+test('toCombinedCSV emits long format: filename,formType then one row per field', () => {
+  const lines = toCombinedCSV([doc]).split('\n')
+  expect(lines[0]).toBe('filename,formType,fieldKey,fieldLabel,box,value')
+  expect(lines[1]).toBe('a.pdf,W-2,wages,"Wages, tips, other comp.",1,"60,000.00"')
+  expect(lines[2]).toBe('a.pdf,W-2,employer,"Employer, Inc.",c,"A, B Co"')
 })
