@@ -13,7 +13,10 @@ export default function Home() {
           <span className="h-2.5 w-2.5 rounded-[2px] bg-ink" />
           TaxExtract
         </Link>
-        <Link to="/guide" className="ml-auto text-xs font-medium text-muted transition-colors hover:text-ink">
+        <Link to="/export" className="ml-auto text-xs font-medium text-muted transition-colors hover:text-ink">
+          Export
+        </Link>
+        <Link to="/guide" className="text-xs font-medium text-muted transition-colors hover:text-ink">
           Guide
         </Link>
         <span className="text-xs font-medium text-muted">Tax preparer</span>

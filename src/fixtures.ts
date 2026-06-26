@@ -28,8 +28,8 @@ const entries: Entry[] = [
   { base: { id: 'doc-scan', filename: 'scan_2231.pdf', fileUrl: scanPdf, mimeType: PDF, reviewedAt: null }, result: asResult(scan) },
   { base: { id: 'doc-contoso', filename: 'contoso_w2.pdf', fileUrl: contosoPdf, mimeType: PDF, reviewedAt: null }, result: asResult(contoso) },
   { base: { id: 'doc-smallco', filename: 'smallco_w2.pdf', fileUrl: smallcoPdf, mimeType: PDF, reviewedAt: '2026-03-04T09:20:00.000Z' }, result: asResult(smallco) },
-  { base: { id: 'doc-nec', filename: 'globex_1099nec.pdf', fileUrl: necPdf, mimeType: PDF, reviewedAt: null }, result: asResult(nec) },
-  { base: { id: 'doc-int', filename: 'firstnatl_1099int.pdf', fileUrl: intPdf, mimeType: PDF, reviewedAt: null }, result: asResult(int) },
+  { base: { id: 'doc-nec', filename: 'globex_1099nec.pdf', fileUrl: necPdf, mimeType: PDF, reviewedAt: '2026-03-12T10:00:00.000Z' }, result: asResult(nec) },
+  { base: { id: 'doc-int', filename: 'firstnatl_1099int.pdf', fileUrl: intPdf, mimeType: PDF, reviewedAt: '2026-03-12T11:30:00.000Z' }, result: asResult(int) },
   { base: { id: 'doc-div', filename: 'vanguard_1099div.pdf', fileUrl: divPdf, mimeType: PDF, reviewedAt: null }, result: asResult(div) },
 ]
 

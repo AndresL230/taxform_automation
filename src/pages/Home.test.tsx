@@ -16,3 +16,8 @@ test('header has a Guide link to the walkthrough', () => {
   renderHome()
   expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('href', '/guide')
 })
+
+test('header has an Export link to the export page', () => {
+  renderHome()
+  expect(screen.getByRole('link', { name: 'Export' })).toHaveAttribute('href', '/export')
+})
