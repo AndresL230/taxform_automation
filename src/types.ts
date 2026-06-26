@@ -1,5 +1,6 @@
 export type DocStatus = 'processing' | 'ready' | 'needs_review' | 'failed'
 export type FieldType = 'currency' | 'ssn' | 'ein' | 'text'
+export type ValidationMessage = { fieldKey: string; message: string }
 
 export type FieldDef = { key: string; box: string; label: string; type: FieldType }
 
@@ -14,6 +15,7 @@ export type Field = {
   confidence: number
   type: FieldType
   bbox: BBox
+  confirmed?: boolean
 }
 
 export type Document = {
@@ -25,6 +27,7 @@ export type Document = {
   status: DocStatus
   fields: Field[]
   reviewedAt: string | null
+  validationMessages?: ValidationMessage[]
   error?: string
 }
 
@@ -32,5 +35,6 @@ export type ExtractionResult = {
   fields: Field[]
   status: DocStatus
   detectedFormType: string
+  validationMessages?: ValidationMessage[]
   error?: string
 }
