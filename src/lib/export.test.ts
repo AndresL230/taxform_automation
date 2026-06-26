@@ -20,7 +20,7 @@ test('toJSON round-trips the document', () => {
 
 test('toCSV emits header + a row per field and quotes commas', () => {
   const lines = toCSV(doc).split('\n')
-  expect(lines[0]).toBe('key,label,box,value,originalValue,confidence,type')
-  expect(lines[1]).toBe('wages,"Wages, tips, other comp.",1,"60,000.00","60,000.00",0.98,currency')
-  expect(lines[2]).toBe('employer,"Employer, Inc.",c,"A, B Co","A, B Co",0.9,text')
+  expect(lines[0]).toBe('key,label,box,value,originalValue,confidence,type,reviewed')
+  expect(lines[1]).toBe('wages,"Wages, tips, other comp.",1,"60,000.00","60,000.00",0.98,currency,false')
+  expect(lines[2]).toBe('employer,"Employer, Inc.",c,"A, B Co","A, B Co",0.9,text,false')
 })
