@@ -16,6 +16,7 @@ export type Field = {
   type: FieldType
   bbox: BBox
   confirmed?: boolean
+  acknowledged?: boolean
 }
 
 export type Document = {
