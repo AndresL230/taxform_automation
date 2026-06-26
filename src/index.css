@@ -22,6 +22,7 @@
 
 @layer base {
   body { @apply bg-paper text-ink font-sans antialiased; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
 }
 
 @keyframes indeterminate-slide {

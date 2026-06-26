@@ -42,3 +42,8 @@ test('failed doc shows failed callout and no Mark as reviewed button', () => {
   expect(screen.getByText(/extraction failed for this document/i)).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /mark as reviewed/i })).toBeNull()
 })
+
+test('header has a Guide link to the walkthrough', () => {
+  renderAt('/review/doc-jdoe')
+  expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('href', '/guide')
+})

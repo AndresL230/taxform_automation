@@ -11,3 +11,8 @@ test('shows the upload zone and the seeded documents table', () => {
   expect(screen.getByText(/drag/i)).toBeInTheDocument()
   expect(screen.getByText('acme_w2_2024.pdf')).toBeInTheDocument()
 })
+
+test('header has a Guide link to the walkthrough', () => {
+  renderHome()
+  expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('href', '/guide')
+})

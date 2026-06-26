@@ -13,7 +13,10 @@ export default function Home() {
           <span className="h-2.5 w-2.5 rounded-[2px] bg-ink" />
           TaxExtract
         </Link>
-        <span className="ml-auto text-xs font-medium text-muted">Tax preparer</span>
+        <Link to="/guide" className="ml-auto text-xs font-medium text-muted transition-colors hover:text-ink">
+          Guide
+        </Link>
+        <span className="text-xs font-medium text-muted">Tax preparer</span>
       </header>
       <main className="mx-auto max-w-5xl px-6 py-8">
         <UploadZone onFiles={addDocuments} />

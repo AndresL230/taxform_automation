@@ -18,6 +18,13 @@ test('shows label and box, fires onSelect on row click', async () => {
   expect(onSelect).toHaveBeenCalled()
 })
 
+test('fires onSelect when the input is focused for editing', async () => {
+  const onSelect = vi.fn()
+  render(<FieldRow field={base} selected={false} onSelect={onSelect} onChange={() => {}} />)
+  await userEvent.click(screen.getByDisplayValue('60,000.00'))
+  expect(onSelect).toHaveBeenCalled()
+})
+
 test('fires onChange when the input is edited', async () => {
   const onChange = vi.fn()
   render(<FieldRow field={base} selected={false} onSelect={() => {}} onChange={onChange} />)

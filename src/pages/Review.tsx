@@ -49,6 +49,9 @@ export default function Review() {
         <FormTypeBadge formType={doc.formType} />
         <StatusPill status={doc.status} />
         <div className="ml-auto flex items-center gap-2">
+          <Link to="/guide" className="px-2 py-1 text-sm font-medium text-muted transition-colors hover:text-ink">
+            Guide
+          </Link>
           {(doc.status === 'ready' || doc.status === 'needs_review') && (
             <button
               type="button"
@@ -90,7 +93,7 @@ export default function Review() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-6">
+      <main className="mx-auto w-full max-w-[1800px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         {doc.status === 'processing' ? (
           <p className="text-muted">This document is still processing…</p>
         ) : doc.status === 'failed' ? (
@@ -98,15 +101,15 @@ export default function Review() {
             Extraction failed for this document. It can't be reviewed, re-upload the file to try again.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
-              <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Document</div>
-              <div className="p-3.5">
+              <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted lg:px-4 lg:py-2.5 lg:text-xs">Document</div>
+              <div className="p-3.5 lg:p-5">
                 <DocumentViewer fileUrl={doc.fileUrl} mimeType={doc.mimeType} highlight={highlight} />
               </div>
             </section>
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
-              <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted lg:px-4 lg:py-2.5 lg:text-xs">
                 Fields · {doc.fields.length} extracted
               </div>
               {doc.fields.length === 0 ? (
