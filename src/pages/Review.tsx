@@ -7,7 +7,7 @@ import StatusPill from '../components/StatusPill'
 import FormTypeBadge from '../components/FormTypeBadge'
 import { toJSON, toCSV, downloadFile } from '../lib/export'
 import { reviewSummary, unreviewedCount } from '../lib/review'
-import type { BBox } from '../types'
+import { locateField } from '../lib/bbox'
 
 export default function Review() {
   const { id } = useParams()
@@ -39,7 +39,7 @@ export default function Review() {
   }
 
   const selectedField = doc.fields.find((f) => f.key === selectedKey) ?? null
-  const highlight: BBox | null = selectedField?.bbox ?? null
+  const located = selectedField ? locateField(selectedField) : { highlight: null, sourceMissing: false }
   const baseName = doc.filename.replace(/\.[^.]+$/, '')
   const summary = reviewSummary(doc)
   const messagesByField = new Map((doc.validationMessages ?? []).map((m) => [m.fieldKey, m.message]))
@@ -115,7 +115,7 @@ export default function Review() {
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
               <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted lg:px-4 lg:py-2.5 lg:text-xs">Document</div>
               <div className="p-3.5 lg:p-5">
-                <DocumentViewer fileUrl={doc.fileUrl} mimeType={doc.mimeType} highlight={highlight} />
+                <DocumentViewer fileUrl={doc.fileUrl} mimeType={doc.mimeType} highlight={located.highlight} sourceMissing={located.sourceMissing} />
               </div>
             </section>
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">

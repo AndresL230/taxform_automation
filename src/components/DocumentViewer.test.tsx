@@ -31,3 +31,9 @@ test('detects a PDF by .pdf url even without a mime type, and overlays the bbox'
   expect(screen.getByTestId('pdf-canvas')).toBeInTheDocument()
   expect(screen.getByTestId('bbox-highlight')).toHaveStyle({ left: '5%', top: '6%', width: '7%', height: '8%' })
 })
+
+test('shows a source-not-located note when sourceMissing and no highlight', () => {
+  render(<DocumentViewer fileUrl="/w2.png" mimeType="image/png" highlight={null} sourceMissing />)
+  expect(screen.getByTestId('source-missing')).toBeInTheDocument()
+  expect(screen.queryByTestId('bbox-highlight')).toBeNull()
+})
