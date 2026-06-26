@@ -10,7 +10,7 @@ import type { BBox } from '../types'
 
 export default function Review() {
   const { id } = useParams()
-  const { getDocument, updateField, markReviewed } = useDocuments()
+  const { getDocument, updateField, markReviewed, confirmField } = useDocuments()
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const exportRef = useRef<HTMLDivElement>(null)
@@ -122,6 +122,7 @@ export default function Review() {
                     selected={selectedKey === f.key}
                     onSelect={() => setSelectedKey(f.key)}
                     onChange={(value) => updateField(doc.id, f.key, value)}
+                    onConfirm={() => confirmField(doc.id, f.key)}
                   />
                 ))
               )}

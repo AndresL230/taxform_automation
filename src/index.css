@@ -17,6 +17,8 @@
   --color-review-line: #e6c97a;
   --color-failed: #c0453b;
   --color-failed-bg: #f8e7e5;
+  --color-flag: #b4341c;
+  --color-flag-bg: #fdeceb;
   --color-proc-bg: #eeeeee;
 }
 
