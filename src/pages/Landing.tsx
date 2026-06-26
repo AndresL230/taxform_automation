@@ -20,7 +20,7 @@ export default function Landing() {
         <span className="font-semibold text-accent">seconds</span>, checked and ready to review.
       </p>
       <Link
-        to="/app"
+        to="/guide"
         className="mt-8 inline-flex items-center gap-2 rounded-[3px] bg-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0b5d56] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         Get started
