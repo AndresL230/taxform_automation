@@ -70,6 +70,7 @@ export default function Guide() {
               <img
                 src={step.image}
                 alt={step.alt}
+                loading="lazy"
                 className="mt-4 w-full rounded-[3px] border border-border shadow-sm"
               />
             </li>
