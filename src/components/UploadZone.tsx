@@ -10,6 +10,7 @@ export default function UploadZone({ onFiles }: { onFiles: (files: File[]) => vo
 
   return (
     <div
+      data-testid="upload-zone"
       onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); emit(e.dataTransfer.files) }}
