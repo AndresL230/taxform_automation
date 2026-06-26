@@ -12,6 +12,7 @@ type DocumentsContextValue = {
   addDocuments(files: File[]): void
   updateField(docId: string, key: string, value: string): void
   confirmField(docId: string, key: string): void
+  acknowledgeField(docId: string, key: string): void
   markReviewed(docId: string): void
   getDocument(id: string): Document | undefined
 }
@@ -84,7 +85,15 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const confirmField = useCallback((docId: string, key: string) => {
     setDocuments((prev) =>
       prev.map((d) =>
-        d.id === docId ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, confirmed: true } : f)) } : d,
+        d.id === docId ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, confirmed: !f.confirmed } : f)) } : d,
+      ),
+    )
+  }, [])
+
+  const acknowledgeField = useCallback((docId: string, key: string) => {
+    setDocuments((prev) =>
+      prev.map((d) =>
+        d.id === docId ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, acknowledged: !f.acknowledged } : f)) } : d,
       ),
     )
   }, [])
@@ -103,8 +112,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
   const getDocument = useCallback((id: string) => documents.find((d) => d.id === id), [documents])
 
   const value = useMemo(
-    () => ({ documents, batch, addDocuments, updateField, confirmField, markReviewed, getDocument }),
-    [documents, batch, addDocuments, updateField, confirmField, markReviewed, getDocument],
+    () => ({ documents, batch, addDocuments, updateField, confirmField, acknowledgeField, markReviewed, getDocument }),
+    [documents, batch, addDocuments, updateField, confirmField, acknowledgeField, markReviewed, getDocument],
   )
 
   return <DocumentsContext.Provider value={value}>{children}</DocumentsContext.Provider>

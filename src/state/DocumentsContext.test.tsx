@@ -15,7 +15,7 @@ const READY_RESULT: ExtractionResult = {
 }
 
 function Harness() {
-  const { documents, batch, addDocuments, updateField, markReviewed, confirmField } = useDocuments()
+  const { documents, batch, addDocuments, updateField, markReviewed, confirmField, acknowledgeField } = useDocuments()
   return (
     <div>
       <span data-testid="count">{documents.length}</span>
@@ -30,6 +30,10 @@ function Harness() {
       <button onClick={() => confirmField('doc-jdoe', 'wages')}>confirm</button>
       <span data-testid="jdoe-wages-confirmed">
         {String(documents.find((d) => d.id === 'doc-jdoe')?.fields.find((f) => f.key === 'wages')?.confirmed ?? false)}
+      </span>
+      <button onClick={() => acknowledgeField('doc-jdoe', 'wages')}>ack</button>
+      <span data-testid="jdoe-wages-acknowledged">
+        {String(documents.find((d) => d.id === 'doc-jdoe')?.fields.find((f) => f.key === 'wages')?.acknowledged ?? false)}
       </span>
       <span data-testid="jdoe-reviewedAt">{documents.find((d) => d.id === 'doc-jdoe')?.reviewedAt ?? ''}</span>
       <span data-testid="jdoe-wages">
@@ -101,6 +105,21 @@ test('confirmField marks a field confirmed', () => {
   setup()
   act(() => { screen.getByText('confirm').click() })
   expect(screen.getByTestId('jdoe-wages-confirmed').textContent).toBe('true')
+})
+
+test('confirmField toggles confirmed off on a second call', () => {
+  setup()
+  act(() => { screen.getByText('confirm').click() })
+  expect(screen.getByTestId('jdoe-wages-confirmed').textContent).toBe('true')
+  act(() => { screen.getByText('confirm').click() })
+  expect(screen.getByTestId('jdoe-wages-confirmed').textContent).toBe('false')
+})
+
+test('acknowledgeField toggles acknowledged', () => {
+  setup()
+  expect(screen.getByTestId('jdoe-wages-acknowledged').textContent).toBe('false')
+  act(() => { screen.getByText('ack').click() })
+  expect(screen.getByTestId('jdoe-wages-acknowledged').textContent).toBe('true')
 })
 
 test('markReviewed stamps reviewedAt but will not force ready when unresolved or flagged', () => {
