@@ -1,31 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDocuments } from '../state/DocumentsContext'
 import DocumentViewer from '../components/DocumentViewer'
 import FieldRow from '../components/FieldRow'
 import StatusPill from '../components/StatusPill'
 import FormTypeBadge from '../components/FormTypeBadge'
-import { toJSON, toCSV, downloadFile } from '../lib/export'
-import { reviewSummary, unreviewedCount } from '../lib/review'
+import { reviewSummary, unreviewedCount, canBeReady, currentViolations } from '../lib/review'
 import { locateField } from '../lib/bbox'
 
 export default function Review() {
   const { id } = useParams()
-  const { getDocument, updateField, markReviewed, confirmField } = useDocuments()
+  const { getDocument, updateField, markReviewed, confirmField, acknowledgeField } = useDocuments()
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const exportRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!menuOpen) return
-    const handleMouseDown = (e: MouseEvent) => {
-      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleMouseDown)
-    return () => document.removeEventListener('mousedown', handleMouseDown)
-  }, [menuOpen])
+  const navigate = useNavigate()
+  const [blocked, setBlocked] = useState(false)
 
   const doc = id ? getDocument(id) : undefined
 
@@ -40,14 +28,10 @@ export default function Review() {
 
   const selectedField = doc.fields.find((f) => f.key === selectedKey) ?? null
   const located = selectedField ? locateField(selectedField) : { highlight: null, sourceMissing: false }
-  const baseName = doc.filename.replace(/\.[^.]+$/, '')
   const summary = reviewSummary(doc)
-  const messagesByField = new Map((doc.validationMessages ?? []).map((m) => [m.fieldKey, m.message]))
-  const canExport = doc.status === 'ready' || doc.status === 'needs_review'
-  const confirmExport = () => {
-    const n = unreviewedCount(doc)
-    return n === 0 || window.confirm(`${n} fields haven't been reviewed, export anyway?`)
-  }
+  const violations = currentViolations(doc)
+  const messagesByField = new Map(violations.map((m) => [m.fieldKey, m.message]))
+  const ackedKeys = new Set(doc.fields.filter((f) => f.acknowledged).map((f) => f.key))
 
   return (
     <div className="min-h-screen bg-paper">
@@ -63,47 +47,28 @@ export default function Review() {
           {(doc.status === 'ready' || doc.status === 'needs_review') && (
             <button
               type="button"
-              onClick={() => markReviewed(doc.id)}
+              onClick={() => {
+                const willBeReady = doc.status === 'ready' || canBeReady(doc)
+                markReviewed(doc.id)
+                if (willBeReady) navigate('/export')
+                else setBlocked(true)
+              }}
               className="rounded-[3px] border border-border bg-white px-3.5 py-2 text-sm font-semibold text-ink"
             >
               Mark as reviewed
             </button>
           )}
-          {canExport && (
-          <div className="relative" ref={exportRef}>
-            <button
-              type="button"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-haspopup="menu"
-              aria-expanded={menuOpen}
-              className="rounded-[3px] bg-accent px-3.5 py-2 text-sm font-semibold text-white"
-            >
-              Export ▾
-            </button>
-            {menuOpen && (
-              <div className="absolute right-0 z-10 mt-1 w-32 rounded-[3px] border border-border bg-white py-1 shadow-sm">
-                <button
-                  type="button"
-                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-paper-2"
-                  onClick={() => { if (!confirmExport()) return; downloadFile(`${baseName}.json`, 'application/json', toJSON(doc)); setMenuOpen(false) }}
-                >
-                  JSON
-                </button>
-                <button
-                  type="button"
-                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-paper-2"
-                  onClick={() => { if (!confirmExport()) return; downloadFile(`${baseName}.csv`, 'text/csv', toCSV(doc)); setMenuOpen(false) }}
-                >
-                  CSV
-                </button>
-              </div>
-            )}
-          </div>
-          )}
         </div>
       </header>
 
       <main className="mx-auto w-full max-w-[1800px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        {blocked && (
+          <div className="mb-4 rounded-[3px] border border-flag/40 bg-flag-bg px-4 py-3 text-sm text-flag">
+            <p className="font-semibold">This form is not finished yet.</p>
+            {unreviewedCount(doc) > 0 && <p>{unreviewedCount(doc)} field(s) still need review. Confirm or correct them to finish.</p>}
+            {violations.some((v) => !ackedKeys.has(v.fieldKey)) && <p>Resolve or acknowledge the flagged field before finishing.</p>}
+          </div>
+        )}
         {doc.status === 'processing' ? (
           <p className="text-muted">This document is still processing…</p>
         ) : doc.status === 'failed' ? (
@@ -137,6 +102,8 @@ export default function Review() {
                     onChange={(value) => updateField(doc.id, f.key, value)}
                     onConfirm={() => confirmField(doc.id, f.key)}
                     validationMessage={messagesByField.get(f.key)}
+                    acknowledged={f.acknowledged}
+                    onAcknowledge={() => acknowledgeField(doc.id, f.key)}
                   />
                 ))
               )}

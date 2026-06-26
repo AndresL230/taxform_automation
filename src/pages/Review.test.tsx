@@ -13,6 +13,7 @@ const renderAt = (path: string) =>
       <MemoryRouter initialEntries={[path]}>
         <Routes>
           <Route path="/review/:id" element={<Review />} />
+          <Route path="/export" element={<div>EXPORT PAGE</div>} />
         </Routes>
       </MemoryRouter>
     </DocumentsProvider>,
@@ -31,10 +32,18 @@ test('renders fields and highlights the clicked field', async () => {
   expect(screen.getByTestId('bbox-highlight')).toBeInTheDocument()
 })
 
-test('marking review does not flip a flagged, unresolved doc to Ready', async () => {
+test('marking review on a flagged doc shows a blocking banner and does not navigate', async () => {
   renderAt('/review/doc-jdoe')
   await userEvent.click(screen.getByRole('button', { name: /mark as reviewed/i }))
+  expect(screen.getByText(/not finished yet/i)).toBeInTheDocument()
+  expect(screen.queryByText('EXPORT PAGE')).toBeNull()
   expect(screen.getByText('Needs review')).toBeInTheDocument()
+})
+
+test('marking review on a ready doc navigates to the export page', async () => {
+  renderAt('/review/doc-acme')
+  await userEvent.click(screen.getByRole('button', { name: /mark as reviewed/i }))
+  expect(screen.getByText('EXPORT PAGE')).toBeInTheDocument()
 })
 
 test('failed doc shows failed callout and no Mark as reviewed button', () => {
@@ -52,20 +61,6 @@ test('shows the per-field review summary', () => {
   renderAt('/review/doc-jdoe')
   expect(screen.getByText(/10 fields/i)).toBeInTheDocument()
   expect(screen.getByText(/to review/i)).toBeInTheDocument()
-})
-
-test('warns before exporting when fields are unreviewed', async () => {
-  const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
-  renderAt('/review/doc-jdoe')
-  await userEvent.click(screen.getByRole('button', { name: /export/i }))
-  await userEvent.click(screen.getByRole('button', { name: 'CSV' }))
-  expect(confirmSpy).toHaveBeenCalled()
-  confirmSpy.mockRestore()
-})
-
-test('a failed doc does not render the Export control', () => {
-  renderAt('/review/doc-scan')
-  expect(screen.queryByRole('button', { name: /export/i })).toBeNull()
 })
 
 test('renders a validation warning for a flagged field', () => {
