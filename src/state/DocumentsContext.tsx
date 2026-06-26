@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { Document, ExtractionResult } from '../types'
 import { applyExtraction } from '../lib/applyExtraction'
+import { canBeReady } from '../lib/review'
 import { fixtures } from '../fixtures'
 
 type BatchProgress = { done: number; total: number }
@@ -10,6 +11,7 @@ type DocumentsContextValue = {
   batch: BatchProgress | null
   addDocuments(files: File[]): void
   updateField(docId: string, key: string, value: string): void
+  confirmField(docId: string, key: string): void
   markReviewed(docId: string): void
   getDocument(id: string): Document | undefined
 }
@@ -79,17 +81,30 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     )
   }, [])
 
+  const confirmField = useCallback((docId: string, key: string) => {
+    setDocuments((prev) =>
+      prev.map((d) =>
+        d.id === docId ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, confirmed: true } : f)) } : d,
+      ),
+    )
+  }, [])
+
   const markReviewed = useCallback((docId: string) => {
     setDocuments((prev) =>
-      prev.map((d) => (d.id === docId ? { ...d, status: 'ready', reviewedAt: new Date().toISOString() } : d)),
+      prev.map((d) => {
+        if (d.id !== docId) return d
+        // reviewedAt is always stamped (a human looked at this). Status only becomes
+        // ready when the doc has actually earned it: all fields reviewed, no violations.
+        return { ...d, status: canBeReady(d) ? 'ready' : d.status, reviewedAt: new Date().toISOString() }
+      }),
     )
   }, [])
 
   const getDocument = useCallback((id: string) => documents.find((d) => d.id === id), [documents])
 
   const value = useMemo(
-    () => ({ documents, batch, addDocuments, updateField, markReviewed, getDocument }),
-    [documents, batch, addDocuments, updateField, markReviewed, getDocument],
+    () => ({ documents, batch, addDocuments, updateField, confirmField, markReviewed, getDocument }),
+    [documents, batch, addDocuments, updateField, confirmField, markReviewed, getDocument],
   )
 
   return <DocumentsContext.Provider value={value}>{children}</DocumentsContext.Provider>

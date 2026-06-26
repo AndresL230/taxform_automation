@@ -15,7 +15,7 @@ const READY_RESULT: ExtractionResult = {
 }
 
 function Harness() {
-  const { documents, batch, addDocuments, updateField, markReviewed } = useDocuments()
+  const { documents, batch, addDocuments, updateField, markReviewed, confirmField } = useDocuments()
   return (
     <div>
       <span data-testid="count">{documents.length}</span>
@@ -27,6 +27,11 @@ function Harness() {
       <button onClick={() => addDocuments([new File(['x'], 'new.png', { type: 'image/png' })])}>add</button>
       <button onClick={() => updateField('doc-jdoe', 'wages', '1.00')}>edit</button>
       <button onClick={() => markReviewed('doc-jdoe')}>review</button>
+      <button onClick={() => confirmField('doc-jdoe', 'wages')}>confirm</button>
+      <span data-testid="jdoe-wages-confirmed">
+        {String(documents.find((d) => d.id === 'doc-jdoe')?.fields.find((f) => f.key === 'wages')?.confirmed ?? false)}
+      </span>
+      <span data-testid="jdoe-reviewedAt">{documents.find((d) => d.id === 'doc-jdoe')?.reviewedAt ?? ''}</span>
       <span data-testid="jdoe-wages">
         {documents.find((d) => d.id === 'doc-jdoe')?.fields.find((f) => f.key === 'wages')?.value}
       </span>
@@ -92,8 +97,16 @@ test('updateField changes a field value', () => {
   expect(screen.getByTestId('jdoe-wages').textContent).toBe('1.00')
 })
 
-test('markReviewed flips status to ready', () => {
+test('confirmField marks a field confirmed', () => {
   setup()
+  act(() => { screen.getByText('confirm').click() })
+  expect(screen.getByTestId('jdoe-wages-confirmed').textContent).toBe('true')
+})
+
+test('markReviewed stamps reviewedAt but will not force ready when unresolved or flagged', () => {
+  setup()
+  expect(screen.getByTestId('jdoe-reviewedAt').textContent).toBe('')
   act(() => { screen.getByText('review').click() })
-  expect(screen.getByTestId('jdoe-status').textContent).toBe('ready')
+  expect(screen.getByTestId('jdoe-status').textContent).toBe('needs_review')
+  expect(screen.getByTestId('jdoe-reviewedAt').textContent).not.toBe('')
 })

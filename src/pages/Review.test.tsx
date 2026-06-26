@@ -31,10 +31,10 @@ test('renders fields and highlights the clicked field', async () => {
   expect(screen.getByTestId('bbox-highlight')).toBeInTheDocument()
 })
 
-test('mark as reviewed flips the status pill to Ready', async () => {
+test('marking review does not flip a flagged, unresolved doc to Ready', async () => {
   renderAt('/review/doc-jdoe')
   await userEvent.click(screen.getByRole('button', { name: /mark as reviewed/i }))
-  expect(screen.getByText('Ready')).toBeInTheDocument()
+  expect(screen.getByText('Needs review')).toBeInTheDocument()
 })
 
 test('failed doc shows failed callout and no Mark as reviewed button', () => {
