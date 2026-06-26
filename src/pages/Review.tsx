@@ -6,6 +6,7 @@ import FieldRow from '../components/FieldRow'
 import StatusPill from '../components/StatusPill'
 import FormTypeBadge from '../components/FormTypeBadge'
 import { toJSON, toCSV, downloadFile } from '../lib/export'
+import { reviewSummary, unreviewedCount } from '../lib/review'
 import type { BBox } from '../types'
 
 export default function Review() {
@@ -40,6 +41,13 @@ export default function Review() {
   const selectedField = doc.fields.find((f) => f.key === selectedKey) ?? null
   const highlight: BBox | null = selectedField?.bbox ?? null
   const baseName = doc.filename.replace(/\.[^.]+$/, '')
+  const summary = reviewSummary(doc)
+  const messagesByField = new Map((doc.validationMessages ?? []).map((m) => [m.fieldKey, m.message]))
+  const canExport = doc.status === 'ready' || doc.status === 'needs_review'
+  const confirmExport = () => {
+    const n = unreviewedCount(doc)
+    return n === 0 || window.confirm(`${n} fields haven't been reviewed, export anyway?`)
+  }
 
   return (
     <div className="min-h-screen bg-paper">
@@ -61,6 +69,7 @@ export default function Review() {
               Mark as reviewed
             </button>
           )}
+          {canExport && (
           <div className="relative" ref={exportRef}>
             <button
               type="button"
@@ -76,20 +85,21 @@ export default function Review() {
                 <button
                   type="button"
                   className="block w-full px-3 py-1.5 text-left text-sm hover:bg-paper-2"
-                  onClick={() => { downloadFile(`${baseName}.json`, 'application/json', toJSON(doc)); setMenuOpen(false) }}
+                  onClick={() => { if (!confirmExport()) return; downloadFile(`${baseName}.json`, 'application/json', toJSON(doc)); setMenuOpen(false) }}
                 >
                   JSON
                 </button>
                 <button
                   type="button"
                   className="block w-full px-3 py-1.5 text-left text-sm hover:bg-paper-2"
-                  onClick={() => { downloadFile(`${baseName}.csv`, 'text/csv', toCSV(doc)); setMenuOpen(false) }}
+                  onClick={() => { if (!confirmExport()) return; downloadFile(`${baseName}.csv`, 'text/csv', toCSV(doc)); setMenuOpen(false) }}
                 >
                   CSV
                 </button>
               </div>
             )}
           </div>
+          )}
         </div>
       </header>
 
@@ -109,8 +119,11 @@ export default function Review() {
               </div>
             </section>
             <section className="overflow-hidden rounded-[3px] border border-border bg-white">
-              <div className="border-b border-border bg-paper-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted lg:px-4 lg:py-2.5 lg:text-xs">
-                Fields · {doc.fields.length} extracted
+              <div className="border-b border-border bg-paper-2 px-3 py-2 lg:px-4 lg:py-2.5">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted lg:text-xs">Fields</div>
+                <div className="mt-0.5 text-[11px] font-normal normal-case text-muted">
+                  {summary.total} fields · {summary.confirmed} confirmed · {summary.corrected} corrected · {summary.remaining} to review
+                </div>
               </div>
               {doc.fields.length === 0 ? (
                 <p className="px-3.5 py-6 text-sm text-muted">No fields were extracted from this document.</p>
@@ -123,6 +136,7 @@ export default function Review() {
                     onSelect={() => setSelectedKey(f.key)}
                     onChange={(value) => updateField(doc.id, f.key, value)}
                     onConfirm={() => confirmField(doc.id, f.key)}
+                    validationMessage={messagesByField.get(f.key)}
                   />
                 ))
               )}

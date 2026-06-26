@@ -47,3 +47,28 @@ test('header has a Guide link to the walkthrough', () => {
   renderAt('/review/doc-jdoe')
   expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('href', '/guide')
 })
+
+test('shows the per-field review summary', () => {
+  renderAt('/review/doc-jdoe')
+  expect(screen.getByText(/10 fields/i)).toBeInTheDocument()
+  expect(screen.getByText(/to review/i)).toBeInTheDocument()
+})
+
+test('warns before exporting when fields are unreviewed', async () => {
+  const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
+  renderAt('/review/doc-jdoe')
+  await userEvent.click(screen.getByRole('button', { name: /export/i }))
+  await userEvent.click(screen.getByRole('button', { name: 'CSV' }))
+  expect(confirmSpy).toHaveBeenCalled()
+  confirmSpy.mockRestore()
+})
+
+test('a failed doc does not render the Export control', () => {
+  renderAt('/review/doc-scan')
+  expect(screen.queryByRole('button', { name: /export/i })).toBeNull()
+})
+
+test('renders a validation warning for a flagged field', () => {
+  renderAt('/review/doc-jdoe')
+  expect(screen.getByTestId('field-warning')).toBeInTheDocument()
+})
