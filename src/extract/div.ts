@@ -1,4 +1,5 @@
 import { buildFormSchemas } from './build'
+import { formatChecks } from './checks'
 import type { FormDefinition } from './registry'
 import type { FieldDef } from '../types'
 
@@ -37,4 +38,5 @@ export const DIV_FORM: FormDefinition = {
   responseSchema: divSchemas.responseSchema,
   validate: divSchemas.validate,
   promptFragment: DIV_PROMPT_FRAGMENT,
+  crossChecks: formatChecks,
 }

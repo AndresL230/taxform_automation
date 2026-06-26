@@ -32,3 +32,8 @@ test('NEC status tiers', () => {
   expect(buildDocument({ isLegible: true, fields: empty }, NEC_FORM).status).toBe('needs_review')
   expect(buildDocument({ isLegible: false, fields: necFields() }, NEC_FORM).status).toBe('failed')
 })
+
+test('a malformed payer TIN flags needs_review via format checks', () => {
+  const bad = { ...necFields(), payerTIN: ex('1234', 0.95) }
+  expect(buildDocument({ isLegible: true, fields: bad }, NEC_FORM).status).toBe('needs_review')
+})

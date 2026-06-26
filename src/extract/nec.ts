@@ -1,4 +1,5 @@
 import { buildFormSchemas } from './build'
+import { formatChecks } from './checks'
 import type { FormDefinition } from './registry'
 import type { FieldDef } from '../types'
 
@@ -31,4 +32,5 @@ export const NEC_FORM: FormDefinition = {
   responseSchema: necSchemas.responseSchema,
   validate: necSchemas.validate,
   promptFragment: NEC_PROMPT_FRAGMENT,
+  crossChecks: formatChecks,
 }
