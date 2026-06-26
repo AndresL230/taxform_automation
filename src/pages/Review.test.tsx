@@ -52,6 +52,25 @@ test('failed doc shows failed callout and no Mark as reviewed button', () => {
   expect(screen.queryByRole('button', { name: /mark as reviewed/i })).toBeNull()
 })
 
+test('blocking banner heading clears once all issues are resolved', async () => {
+  renderAt('/review/doc-jdoe')
+  // trigger blocked state
+  await userEvent.click(screen.getByRole('button', { name: /mark as reviewed/i }))
+  expect(screen.getByText(/not finished yet/i)).toBeInTheDocument()
+
+  // confirm all 10 fields
+  const confirmButtons = screen.getAllByRole('button', { name: /confirm/i })
+  for (const btn of confirmButtons) {
+    await userEvent.click(btn)
+  }
+  // acknowledge the flagged field
+  const ackBtn = screen.queryByRole('button', { name: /acknowledge/i })
+  if (ackBtn) await userEvent.click(ackBtn)
+
+  // heading must be gone
+  expect(screen.queryByText(/not finished yet/i)).toBeNull()
+})
+
 test('header has a Guide link to the walkthrough', () => {
   renderAt('/review/doc-jdoe')
   expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('href', '/guide')

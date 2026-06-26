@@ -5,9 +5,8 @@ const fld = (over: Partial<Field>): Field => ({
   key: 'k', label: 'k', box: '1', value: 'v', originalValue: 'v', confidence: 0.95, type: 'text',
   bbox: { page: 1, x: 0, y: 0, w: 1, h: 1 }, ...over,
 })
-const doc = (fields: Field[], validationMessages?: Document['validationMessages']): Document => ({
+const doc = (fields: Field[]): Document => ({
   id: 'd', filename: 'f', fileUrl: 'u', formType: 'W-2', status: 'needs_review', reviewedAt: null, fields,
-  ...(validationMessages ? { validationMessages } : {}),
 })
 
 test('isFieldReviewed: confirmed OR edited, not mere default', () => {

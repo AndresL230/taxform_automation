@@ -32,6 +32,7 @@ export default function Review() {
   const violations = currentViolations(doc)
   const messagesByField = new Map(violations.map((m) => [m.fieldKey, m.message]))
   const ackedKeys = new Set(doc.fields.filter((f) => f.acknowledged).map((f) => f.key))
+  const stillBlocking = unreviewedCount(doc) > 0 || violations.some((v) => !ackedKeys.has(v.fieldKey))
 
   return (
     <div className="min-h-screen bg-paper">
@@ -62,7 +63,7 @@ export default function Review() {
       </header>
 
       <main className="mx-auto w-full max-w-[1800px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        {blocked && (
+        {blocked && stillBlocking && (
           <div className="mb-4 rounded-[3px] border border-flag/40 bg-flag-bg px-4 py-3 text-sm text-flag">
             <p className="font-semibold">This form is not finished yet.</p>
             {unreviewedCount(doc) > 0 && <p>{unreviewedCount(doc)} field(s) still need review. Confirm or correct them to finish.</p>}

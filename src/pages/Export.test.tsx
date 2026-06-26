@@ -39,3 +39,10 @@ test('choosing CSV triggers a combined download', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'CSV' }))
   expect(downloadFile).toHaveBeenCalledWith('reviewed-forms.csv', 'text/csv', expect.any(String))
 })
+
+test('choosing JSON triggers a combined download', async () => {
+  renderExport()
+  await userEvent.click(screen.getByRole('button', { name: /export selected/i }))
+  await userEvent.click(screen.getByRole('button', { name: 'JSON' }))
+  expect(downloadFile).toHaveBeenCalledWith('reviewed-forms.json', 'application/json', expect.any(String))
+})
