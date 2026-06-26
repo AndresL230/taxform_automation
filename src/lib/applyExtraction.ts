@@ -8,7 +8,7 @@ export function applyExtraction(base: DocumentBase, result: ExtractionResult): D
     formType: result.detectedFormType,
     status: result.status,
     fields: result.fields,
-    ...(result.validationMessages ? { validationMessages: result.validationMessages } : {}),
+    ...(result.validationMessages?.length ? { validationMessages: result.validationMessages } : {}),
     ...(result.error ? { error: result.error } : {}),
   }
 }

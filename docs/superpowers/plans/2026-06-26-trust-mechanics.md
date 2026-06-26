@@ -24,25 +24,25 @@
 ## File Structure
 
 **New files:**
-- `src/extract/checks.ts` — shared, form-agnostic format validators + `formatChecks`.
-- `src/lib/review.ts` — derived review helpers (`isFieldReviewed`, `reviewSummary`, `unreviewedCount`, `canBeReady`).
-- `src/lib/bbox.ts` — `isBBoxRenderable`, `locateField` (render-time bbox grace).
+- `src/extract/checks.ts`: shared, form-agnostic format validators + `formatChecks`.
+- `src/lib/review.ts`: derived review helpers (`isFieldReviewed`, `reviewSummary`, `unreviewedCount`, `canBeReady`).
+- `src/lib/bbox.ts`: `isBBoxRenderable`, `locateField` (render-time bbox grace).
 - Test files: `src/extract/checks.test.ts`, `src/lib/review.test.ts`, `src/lib/bbox.test.ts`.
 
 **Modified files:**
-- `src/types.ts` — `ValidationMessage`; optional `Field.confirmed`, `Document.validationMessages`, `ExtractionResult.validationMessages`.
-- `src/extract/build.ts` — `buildDocument` widens (crossChecks param, returns `validationMessages`, third OR); seam comment.
-- `src/extract/registry.ts` — optional `FormDefinition.crossChecks`.
-- `src/extract/extract.ts` — thread `validationMessages` into the result.
-- `src/lib/applyExtraction.ts` — carry `validationMessages`.
-- `src/extract/w2.ts` — 3 new fields (3 places) + `w2CrossChecks` + `W2_FORM.crossChecks`.
-- `src/extract/nec.ts`, `int.ts`, `div.ts` — `crossChecks: formatChecks`.
-- `src/state/DocumentsContext.tsx` — `confirmField` action + reconciled `markReviewed`.
-- `src/components/FieldRow.tsx` — confirm control, `was:` original, validation warning row.
-- `src/pages/Review.tsx` — summary line, validation map, confirm wiring, export gate + warn.
-- `src/components/DocumentViewer.tsx` — `sourceMissing` prop + note.
-- `src/lib/export.ts` — `reviewed` CSV column.
-- `src/index.css` — `--color-flag`, `--color-flag-bg` tokens.
+- `src/types.ts`: `ValidationMessage`; optional `Field.confirmed`, `Document.validationMessages`, `ExtractionResult.validationMessages`.
+- `src/extract/build.ts`: `buildDocument` widens (crossChecks param, returns `validationMessages`, third OR); seam comment.
+- `src/extract/registry.ts`: optional `FormDefinition.crossChecks`.
+- `src/extract/extract.ts`: thread `validationMessages` into the result.
+- `src/lib/applyExtraction.ts`: carry `validationMessages`.
+- `src/extract/w2.ts`: 3 new fields (3 places) + `w2CrossChecks` + `W2_FORM.crossChecks`.
+- `src/extract/nec.ts`, `int.ts`, `div.ts`: `crossChecks: formatChecks`.
+- `src/state/DocumentsContext.tsx`: `confirmField` action + reconciled `markReviewed`.
+- `src/components/FieldRow.tsx`: confirm control, `was:` original, validation warning row.
+- `src/pages/Review.tsx`: summary line, validation map, confirm wiring, export gate + warn.
+- `src/components/DocumentViewer.tsx`: `sourceMissing` prop + note.
+- `src/lib/export.ts`: `reviewed` CSV column.
+- `src/index.css`: `--color-flag`, `--color-flag-bg` tokens.
 - Fixtures: `src/fixtures/acme.json`, `jdoe.json`, `contoso.json`, `smallco.json`.
 - Updated test files (deliberate ripple): `src/extract/w2.test.ts`, `build.test.ts`, `nec.test.ts`, `extract.test.ts`, `src/api/documents.test.ts`, `src/fixtures.test.ts`, `src/state/DocumentsContext.test.tsx`, `src/pages/Review.test.tsx`, `src/components/FieldRow.test.tsx`, `src/components/DocumentViewer.test.tsx`, `src/lib/applyExtraction.test.ts`, `src/lib/export.test.ts`.
 
@@ -1573,6 +1573,6 @@ Expected: no errors.
 
 ## Self-review (run after the plan is executed)
 
-1. **Spec coverage** — Decision 1: Task 3 (3 fields in all three places, fixtures, ripple). Decision 2: Tasks 1-4 (checks, buildDocument third OR, threading, W-2 arithmetic, 1099 format-only, FieldRow warning). Decision 3: Tasks 5-7 + 9 (confirmField, reconciled markReviewed, summary, soft export gate + failed guard, original-value display, reviewed column). Decision 4: Task 8 (predicate, grace, seam comment in Task 2). Contract additive: Task 1.
-2. **Type consistency** — `crossChecks: (fields: Field[]) => ValidationMessage[]` is identical in `registry.ts`, `build.ts`, and the W-2/1099 forms. `buildDocument` returns `{ fields, status, validationMessages }` everywhere. `isFieldReviewed`/`canBeReady`/`reviewSummary`/`unreviewedCount` signatures match their call sites. `FieldRow` `onConfirm` is required and wired in Review; `validationMessage` optional.
+1. **Spec coverage**, Decision 1: Task 3 (3 fields in all three places, fixtures, ripple). Decision 2: Tasks 1-4 (checks, buildDocument third OR, threading, W-2 arithmetic, 1099 format-only, FieldRow warning). Decision 3: Tasks 5-7 + 9 (confirmField, reconciled markReviewed, summary, soft export gate + failed guard, original-value display, reviewed column). Decision 4: Task 8 (predicate, grace, seam comment in Task 2). Contract additive: Task 1.
+2. **Type consistency**, `crossChecks: (fields: Field[]) => ValidationMessage[]` is identical in `registry.ts`, `build.ts`, and the W-2/1099 forms. `buildDocument` returns `{ fields, status, validationMessages }` everywhere. `isFieldReviewed`/`canBeReady`/`reviewSummary`/`unreviewedCount` signatures match their call sites. `FieldRow` `onConfirm` is required and wired in Review; `validationMessage` optional.
 3. **Known flags to confirm with the user**: the `reviewed` CSV column (deliberate reading of the recon's CSV-header-test ripple); the extraction-time-snapshot limitation of `validationMessages` (no recompute on edit); the bbox seam scaling fix gated on an eval run.
