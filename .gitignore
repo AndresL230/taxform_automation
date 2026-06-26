@@ -7,4 +7,4 @@ vite.config.js
 .wrangler/
 .dev.vars
 scripts/eval/out/
-scripts/eval/assets/fw2.pdf
+scripts/eval/assets/*.pdf

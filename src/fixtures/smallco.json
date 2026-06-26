@@ -2,12 +2,117 @@
   "status": "ready",
   "detectedFormType": "W-2",
   "fields": [
-    { "key": "wages", "label": "Wages, tips, other comp.", "box": "1", "value": "44750.00", "originalValue": "44750.00", "confidence": 0.96, "type": "currency", "bbox": { "page": 1, "x": 54.0, "y": 13.8, "w": 18.5, "h": 6.0 } },
-    { "key": "federalWithholding", "label": "Federal income tax withheld", "box": "2", "value": "5210.00", "originalValue": "5210.00", "confidence": 0.95, "type": "currency", "bbox": { "page": 1, "x": 72.5, "y": 13.8, "w": 22.0, "h": 6.0 } },
-    { "key": "socialSecurityWages", "label": "Social security wages", "box": "3", "value": "45000.00", "originalValue": "45000.00", "confidence": 0.94, "type": "currency", "bbox": { "page": 1, "x": 54.0, "y": 19.8, "w": 18.5, "h": 6.0 } },
-    { "key": "employerEIN", "label": "Employer EIN", "box": "b", "value": "77-0182234", "originalValue": "77-0182234", "confidence": 0.92, "type": "ein", "bbox": { "page": 1, "x": 5.5, "y": 13.8, "w": 48.5, "h": 6.0 } },
-    { "key": "employeeSSN", "label": "Employee SSN", "box": "a", "value": "288-41-9930", "originalValue": "288-41-9930", "confidence": 0.9, "type": "ssn", "bbox": { "page": 1, "x": 25.0, "y": 8.5, "w": 21.0, "h": 5.0 } },
-    { "key": "employeeName", "label": "Employee name", "box": "e", "value": "Dana Whitfield", "originalValue": "Dana Whitfield", "confidence": 0.88, "type": "text", "bbox": { "page": 1, "x": 5.5, "y": 41.5, "w": 48.5, "h": 6.0 } },
-    { "key": "employerName", "label": "Employer name", "box": "c", "value": "Smallco LLC", "originalValue": "Smallco LLC", "confidence": 0.9, "type": "text", "bbox": { "page": 1, "x": 5.5, "y": 19.3, "w": 48.5, "h": 16.0 } }
+    {
+      "key": "wages",
+      "label": "Wages, tips, other comp.",
+      "box": "1",
+      "value": "44750.00",
+      "originalValue": "44750.00",
+      "confidence": 0.96,
+      "type": "currency",
+      "bbox": {
+        "page": 1,
+        "x": 54.44,
+        "y": 15.12,
+        "w": 19.35,
+        "h": 3.49
+      }
+    },
+    {
+      "key": "federalWithholding",
+      "label": "Federal income tax withheld",
+      "box": "2",
+      "value": "5210.00",
+      "originalValue": "5210.00",
+      "confidence": 0.95,
+      "type": "currency",
+      "bbox": {
+        "page": 1,
+        "x": 74.44,
+        "y": 15.12,
+        "w": 19.35,
+        "h": 3.49
+      }
+    },
+    {
+      "key": "socialSecurityWages",
+      "label": "Social security wages",
+      "box": "3",
+      "value": "45000.00",
+      "originalValue": "45000.00",
+      "confidence": 0.94,
+      "type": "currency",
+      "bbox": {
+        "page": 1,
+        "x": 54.28,
+        "y": 22.09,
+        "w": 19.67,
+        "h": 3.49
+      }
+    },
+    {
+      "key": "employerEIN",
+      "label": "Employer EIN",
+      "box": "b",
+      "value": "77-0182234",
+      "originalValue": "77-0182234",
+      "confidence": 0.92,
+      "type": "ein",
+      "bbox": {
+        "page": 1,
+        "x": 6.21,
+        "y": 15.12,
+        "w": 47.75,
+        "h": 3.49
+      }
+    },
+    {
+      "key": "employeeSSN",
+      "label": "Employee SSN",
+      "box": "a",
+      "value": "288-41-9930",
+      "originalValue": "288-41-9930",
+      "confidence": 0.9,
+      "type": "ssn",
+      "bbox": {
+        "page": 1,
+        "x": 25.03,
+        "y": 8.14,
+        "w": 20.52,
+        "h": 3.49
+      }
+    },
+    {
+      "key": "employeeName",
+      "label": "Employee name",
+      "box": "e",
+      "value": "Dana Whitfield",
+      "originalValue": "Dana Whitfield",
+      "confidence": 0.88,
+      "type": "text",
+      "bbox": {
+        "page": 1,
+        "x": 6.21,
+        "y": 50,
+        "w": 21.86,
+        "h": 3.49
+      }
+    },
+    {
+      "key": "employerName",
+      "label": "Employer name",
+      "box": "c",
+      "value": "Smallco LLC",
+      "originalValue": "Smallco LLC",
+      "confidence": 0.9,
+      "type": "text",
+      "bbox": {
+        "page": 1,
+        "x": 6.21,
+        "y": 22.09,
+        "w": 47.75,
+        "h": 17.44
+      }
+    }
   ]
 }
