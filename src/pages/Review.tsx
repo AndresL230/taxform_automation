@@ -32,7 +32,7 @@ export default function Review() {
     return (
       <div className="mx-auto max-w-5xl px-6 py-10">
         <p className="text-ink">Document not found.</p>
-        <Link to="/" className="mt-2 inline-block font-semibold text-ink underline underline-offset-2">← Back</Link>
+        <Link to="/app" className="mt-2 inline-block font-semibold text-ink underline underline-offset-2">← Back</Link>
       </div>
     )
   }
@@ -44,7 +44,7 @@ export default function Review() {
   return (
     <div className="min-h-screen bg-paper">
       <header className="flex flex-wrap items-center gap-2.5 border-b border-border bg-white px-4 py-3">
-        <Link to="/" aria-label="Back to document list" className="rounded-[3px] border border-border bg-white px-2.5 py-1.5 text-sm">←</Link>
+        <Link to="/app" aria-label="Back to document list" className="rounded-[3px] border border-border bg-white px-2.5 py-1.5 text-sm">←</Link>
         <span className="text-sm font-semibold">{doc.filename}</span>
         <FormTypeBadge formType={doc.formType} />
         <StatusPill status={doc.status} />
